@@ -22,7 +22,7 @@ Wszystkie zdjęcia w grze i na kartach pochodzą z Wikimedia Commons i są na wo
 | F40 | f40.jpg | [Wikimedia Commons – Elena Chochkova](https://commons.wikimedia.org/wiki/File:P1030323.JPG) | CC BY-SA 4.0 |
 | F41 | f41.jpg | [Wikimedia Commons – 221.20 (talk)](https://commons.wikimedia.org/wiki/File:Ky%C5%ABshirataki_station01.JPG) | Public domain |
 | F42 | f42.jpg | [Wikimedia Commons – Klein Tools](https://commons.wikimedia.org/wiki/File:Tape_Measure_25%27_Klein_Tools.jpg) | CC BY-SA 4.0 |
-| F43 | f43.jpg | [Wikimedia Commons – Wikideas1](https://commons.wikimedia.org/wiki/File:Cell_tower_aerial.jpg) | CC0 |
+| F43 | f43.jpg | [Wikimedia Commons – Cvmontuy](https://commons.wikimedia.org/wiki/File:Cell_Tower_Ciudad_del_Carmen2020.jpg) | CC BY-SA 4.0 |
 | F44 | f44.jpg | [Wikimedia Commons – Ehsan Akhgari](https://commons.wikimedia.org/wiki/File:In-page_pop-up_window_advertisement.jpg) | MPL 2 |
 | F45 | f45.jpg | [Wikimedia Commons – User natchayapong from Pixabay.com](https://commons.wikimedia.org/wiki/File:Samsung_Galaxy_Watch.jpg) | CC0 |
 | F47 | f47.jpg | [Wikimedia Commons – James St. John](https://commons.wikimedia.org/wiki/File:Canis_dirus_Sternberg_Museum.jpg) | CC BY 2.0 |
@@ -58,7 +58,7 @@ Wszystkie zdjęcia w grze i na kartach pochodzą z Wikimedia Commons i są na wo
 | F76 | f76.jpg | [Wikimedia Commons – ScottRobertAnselmo](https://commons.wikimedia.org/wiki/File:Tyrannosaurus_Rex_Holotype.jpg) | CC BY-SA 3.0 |
 | F77 | f77.jpg | [Wikimedia Commons – Wesalius](https://commons.wikimedia.org/wiki/File:Venous_and_arterial_blood.jpg) | CC BY-SA 3.0 |
 | F78 | f78.jpg | [Wikimedia Commons – Michael Gäbler](https://commons.wikimedia.org/wiki/File:Araneus_diadematus_(Clerck,_1757).JPG) | CC BY-SA 3.0 |
-| F79 | f79.jpg | [Wikimedia Commons – Ansgar Koreng](https://commons.wikimedia.org/wiki/File:Fassade_Wilhelmstrasse_65,_Berlin-Mitte,_160417,_ako.jpg) | CC BY 3.0 de |
+| F79 | f79.jpg | [Wikimedia Commons – böhringer friedrich](https://commons.wikimedia.org/wiki/File:AKMuseum5.JPG) | CC BY-SA 2.5 |
 | F80 | f80.jpg | [Wikimedia Commons – Andreas Trepte](https://commons.wikimedia.org/wiki/File:Apis_mellifera_Western_honey_bee.jpg) | CC BY-SA 2.5 |
 | F81 | f81.jpg | [Wikimedia Commons – Étienne-Jules Marey](https://commons.wikimedia.org/wiki/File:Falling_cat_1894.jpg) | Public domain |
 | F82 | f82.jpg | [Wikimedia Commons – Jörg Hempel](https://commons.wikimedia.org/wiki/File:Erinaceus_europaeus_LC0119.jpg) | CC BY-SA 2.0 de |
@@ -77,7 +77,7 @@ Wszystkie zdjęcia w grze i na kartach pochodzą z Wikimedia Commons i są na wo
 | P109 | p109.jpg | [Wikimedia Commons – en:NASA, en:STScI, en:WikiSky](https://commons.wikimedia.org/wiki/File:Messier_87_Hubble_WikiSky.jpg) | Public domain |
 | P110 | p110.jpg | [Wikimedia Commons – Diliff](https://commons.wikimedia.org/wiki/File:Koala_climbing_tree.jpg) | CC BY-SA 3.0 |
 | P111 | p111.jpg | [Wikimedia Commons – autor wg strony pliku](https://commons.wikimedia.org/wiki/File:Corvus-brachyrhynchos-001.jpg) | CC BY-SA 3.0 |
-| P112 | p112.jpg | [Wikimedia Commons – COD Newsroom](https://commons.wikimedia.org/wiki/File:Beekeeper_2017_Honeybee_Conservancy,_College_of_DuPage.jpg) | CC BY 2.0 |
+| P112 | p112.jpg | [Wikimedia Commons – Tanner Smida](https://commons.wikimedia.org/wiki/File:The_Lone_Pollinator.jpg) | CC BY 4.0 |
 | P113 | p113.jpg | [Wikimedia Commons – National Institutes of Health (NIH)](https://commons.wikimedia.org/wiki/File:HeLa-IV.jpg) | Public domain |
 | P114 | p114.jpg | [Wikimedia Commons – High Plains Drifter at English Wikipedia.](https://commons.wikimedia.org/wiki/File:Paper_Shredder.jpg) | Public domain |
 | P115 | p115.jpg | [Wikimedia Commons – PD-USGov, exact author unknown](https://commons.wikimedia.org/wiki/File:Big-eared-townsend-fledermaus.jpg) | Public domain |
@@ -88,7 +88,7 @@ Wszystkie zdjęcia w grze i na kartach pochodzą z Wikimedia Commons i są na wo
 | P120 | p120.jpg | [Wikimedia Commons – Mathias Krumbholz](https://commons.wikimedia.org/wiki/File:Lightning_Pritzerbe_01_(MK).jpg) | CC BY-SA 3.0 |
 | P121 | p121.jpg | [Wikimedia Commons – Carsten Steger](https://commons.wikimedia.org/wiki/File:Aerial_image_of_Grand_Prismatic_Spring_(view_from_the_south).jpg) | CC BY-SA 4.0 |
 | P122 | p122.jpg | [Wikimedia Commons – NASA, ESA, CSA, and STScI](https://commons.wikimedia.org/wiki/File:Webb%27s_First_Deep_Field.jpg) | Public domain |
-| P123 | p123.jpg | [Wikimedia Commons – CraigL](https://commons.wikimedia.org/wiki/File:Fitzroy_River_turtle,_Rheodytes_leukops.png) | CC BY-SA 4.0 |
+| P123 | p123.jpg | [Wikimedia Commons – Marilyn Connell](https://commons.wikimedia.org/wiki/File:Elusor_macrurus_76801512.jpg) | CC BY 4.0 |
 | P124 | p124.jpg | [Wikimedia Commons – Ivan Sabljak](https://commons.wikimedia.org/wiki/File:%C3%9Eingvellir_from_the_information_centre.JPG) | CC BY-SA 3.0 |
 | P125 | p125.jpg | [Wikimedia Commons – NASA, ESA, AURA/Caltech, Palomar Observatory The science team consists of: D. Soderblom and E. Nelan (STScI), F. Benedi](https://commons.wikimedia.org/wiki/File:Pleiades_large.jpg) | Public domain |
 | P131 | p131.jpg | [Wikimedia Commons – Janet Graham](https://commons.wikimedia.org/wiki/File:Culiseta_annulata,_Trawscoed,_North_Wales,_Oct_2015_3_-_Flickr_-_janetgraham84.jpg) | CC BY 2.0 |
@@ -99,7 +99,7 @@ Wszystkie zdjęcia w grze i na kartach pochodzą z Wikimedia Commons i są na wo
 | P141 | p141.jpg | [Wikimedia Commons – Kevin Gill from Los Angeles, CA, United States](https://commons.wikimedia.org/wiki/File:Saturn_-_July_24_2013_(48594309686).jpg) | CC BY 2.0 |
 | P143 | p143.jpg | [Wikimedia Commons – US Department of Energy photo.](https://commons.wikimedia.org/wiki/File:Laccaria,_DOE.jpg) | Public domain |
 | P144 | p144.jpg | [Wikimedia Commons – Lilly M](https://commons.wikimedia.org/wiki/File:Dog_niemiecki_%C5%BC%C3%B3%C5%82ty_LM980.jpg) | CC BY-SA 2.5 |
-| P146 | p146.jpg | [Wikimedia Commons – ESO/A. Ghizzi Panizza (www.albertoghizzipanizza.com)](https://commons.wikimedia.org/wiki/File:Guiding_the_Milky_Way_(potw2222a).jpg) | CC BY 4.0 |
+| P146 | p146.jpg | [Wikimedia Commons – Santiago Ramón y Cajal](https://commons.wikimedia.org/wiki/File:PurkinjeCell.jpg) | Public domain |
 | P147 | p147.jpg | [Wikimedia Commons – NASA Johnson Space Center](https://commons.wikimedia.org/wiki/File:Iss071e052057.jpg) | Public domain |
 | P148 | p148.jpg | [Wikimedia Commons – FxJ](https://commons.wikimedia.org/wiki/File:ICC_2008_Poland_Silicon_Wafer_1_edit.png) | Public domain |
 | P149 | p149.jpg | [Wikimedia Commons – TimothyPilgrim](https://commons.wikimedia.org/wiki/File:Bananavarieties.jpg) | CC BY-SA 3.0 |
@@ -118,7 +118,7 @@ Wszystkie zdjęcia w grze i na kartach pochodzą z Wikimedia Commons i są na wo
 | P162 | p162.jpg | [Wikimedia Commons – Josh Estey/AusAID](https://commons.wikimedia.org/wiki/File:Clean_water_for_a_village_in_West_Lombok_(10686572086).jpg) | CC BY 2.0 |
 | P163 | p163.jpg | [Wikimedia Commons – Kimberly Vardeman](https://commons.wikimedia.org/wiki/File:The_newborn_baby_in_men.jpg) | CC BY 2.0 |
 | P164 | p164.jpg | [Wikimedia Commons – Community Archives](https://commons.wikimedia.org/wiki/File:Hastings_County_Archives_OSD_1938-1939-54_(39912414015).jpg) | Public domain |
-| P165 | p165.jpg | [Wikimedia Commons – National Media Museum](https://commons.wikimedia.org/wiki/File:Yawning_koala_bear_(3589381656)_(cropped).jpg) | No restrictions |
+| P165 | p165.jpg | [Wikimedia Commons – Eric Sonstroem from California, USA](https://commons.wikimedia.org/wiki/File:Yawning_Dog_(17837804805).jpg) | CC BY 2.0 |
 | P166 | p166.jpg | [Wikimedia Commons – Muhammad Mahdi Karim Facebook The making of this document was supported by Wikimedia CH. (Submit your project!) For](https://commons.wikimedia.org/wiki/File:Giraffe_Mikumi_National_Park.jpg) | GFDL 1.2 |
 | P167 | p167.jpg | [Wikimedia Commons – Samantha Henneke from Seagrove, North Carolina, USA](https://commons.wikimedia.org/wiki/File:Red_Ant_-_March_2025.jpg) | CC BY 2.0 |
 | P168 | p168.jpg | [Wikimedia Commons – Karin Langner-Bahmann, upload von Martin Bahmann](https://commons.wikimedia.org/wiki/File:Siam_lilacpoint.jpg) | CC BY-SA 3.0 |

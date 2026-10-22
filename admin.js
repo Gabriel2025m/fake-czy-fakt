@@ -39,7 +39,7 @@ function zapisz(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catc
 function esc(s) {
   return String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 }
-const WERSJA_ZDJEC = 2;
+const WERSJA_ZDJEC = 3;
 function imgSrc(name) {
   if (!name) return "";
   // ?v=… – po podmianie zdjęć (te same nazwy plików) przeglądarka pobierze nowe zamiast starych z pamięci

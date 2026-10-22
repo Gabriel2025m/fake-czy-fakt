@@ -556,7 +556,7 @@ async function copy(text) {
 function linkHost(url) {
   try { return new URL(url).hostname.replace(/^www\./, ""); } catch { return url; }
 }
-const WERSJA_ZDJEC = 2;
+const WERSJA_ZDJEC = 3;
 function imgSrc(name) {
   if (!name) return "";
   // ?v=… – po podmianie zdjęć (te same nazwy plików) przeglądarka pobierze nowe zamiast starych z pamięci
