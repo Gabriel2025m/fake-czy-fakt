@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="author" content="UNSEEN – ZSTiO Jarosław">
+  <title>Karty do druku – FAKE czy FAKT?</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="admin.css?v=14">
+</head>
+<body>
+  <header class="topbar no-print">
+    <div class="brand"><b>FAKE czy FAKT?</b> <span>Karty do druku</span><small class="credit">by <b>UNSEEN</b> · ZSTiO Jarosław</small></div>
+    <nav class="tabs" id="tabs">
+      <button data-tab="cards" class="on">Karty</button>
+      <button data-tab="preview">Podgląd wydruku</button>
+    </nav>
+    <a class="back" href="./">Do gry</a>
+  </header>
+
+  <div class="layout no-print-layout">
+    <aside class="side no-print" id="side"></aside>
+    <main class="main">
+      <section id="tab-cards" class="no-print"></section>
+      <section id="tab-preview" hidden>
+        <div class="preview-bar no-print" id="preview-bar"></div>
+        <div class="sheets" id="sheets"></div>
+      </section>
+    </main>
+  </div>
+
+  <dialog id="editor" class="editor no-print"></dialog>
+  <input type="file" id="import-file" accept="application/json,.json" hidden>
+  <div id="toast" class="toast no-print" role="status" aria-live="polite"></div>
+
+  <script src="questions.js?v=14"></script>
+  <script src="powerups.js?v=14"></script>
+  <script src="admin.js?v=14"></script>
+</body>
+</html>
