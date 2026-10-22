@@ -9,7 +9,6 @@ Wszystkie zdjęcia w grze i na kartach pochodzą z Wikimedia Commons i są na wo
 | F11 | f11.jpg | [Wikimedia Commons – Oren Jack Turner](https://commons.wikimedia.org/wiki/File:Albert_Einstein_Head_cleaned.jpg) | Public domain |
 | F13 | f13.jpg | [Wikimedia Commons – לינה אבוגוש](https://commons.wikimedia.org/wiki/File:Gold_fish1.jpg) | CC BY-SA 3.0 |
 | F15 | f15.jpg | [Wikimedia Commons – Yathin S Krishnappa](https://commons.wikimedia.org/wiki/File:Struthio_camelus_-_Etosha_2014_(3).jpg) | CC BY-SA 4.0 |
-| F19 | f19.jpg | [Wikimedia Commons – Nic McPhee from Morris, Minnesota, USA](https://commons.wikimedia.org/wiki/File:Flickr_-_Nic%27s_events_-_London_-_14-15_Dec_2007_-_034.jpg) | CC BY-SA 2.0 |
 | F2 | f2.jpg | [Wikimedia Commons – Lusheeta](https://commons.wikimedia.org/wiki/File:Chewing_gum_stick.jpg) | CC BY-SA 3.0 |
 | F21 | f21.jpg | [Wikimedia Commons – MdeVicente](https://commons.wikimedia.org/wiki/File:Aluminio.jpg) | CC0 |
 | F3 | f3.jpg | [Wikimedia Commons – Severin.stalder](https://commons.wikimedia.org/wiki/File:The_Great_Wall_of_China_at_Jinshanling-edit.jpg) | CC BY-SA 3.0 |
@@ -17,7 +16,6 @@ Wszystkie zdjęcia w grze i na kartach pochodzą z Wikimedia Commons i są na wo
 | F33 | f33.jpg | [Wikimedia Commons – Grayliptrot](https://commons.wikimedia.org/wiki/File:Bitcoin.svg) | Public domain |
 | F34 | f34.jpg | [Wikimedia Commons – No machine-readable author provided. Biggishben~commonswiki assumed (based on copyright claims).](https://commons.wikimedia.org/wiki/File:Syringe2.jpg) | CC BY-SA 3.0 |
 | F35 | f35.jpg | [Wikimedia Commons – Kim Hansen](https://commons.wikimedia.org/wiki/File:Cow_(Fleckvieh_breed)_Oeschinensee_Slaunger_2009-07-07.jpg) | CC BY-SA 3.0 |
-| F36 | f36.jpg | [Wikimedia Commons – Studio Incendo](https://commons.wikimedia.org/wiki/File:Tai_Po_Voting_queue-20200712.jpg) | CC BY 2.0 |
 | F4 | f4.jpg | [Wikimedia Commons – Andrew Dyer](https://commons.wikimedia.org/wiki/File:AtTheCuttingEdge.jpg) | CC BY-SA 2.0 |
 | F40 | f40.jpg | [Wikimedia Commons – Elena Chochkova](https://commons.wikimedia.org/wiki/File:P1030323.JPG) | CC BY-SA 4.0 |
 | F42 | f42.jpg | [Wikimedia Commons – Klein Tools](https://commons.wikimedia.org/wiki/File:Tape_Measure_25%27_Klein_Tools.jpg) | CC BY-SA 4.0 |
