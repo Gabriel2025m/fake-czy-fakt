@@ -20,7 +20,6 @@ Wszystkie zdjęcia w grze i na kartach pochodzą z Wikimedia Commons i są na wo
 | F36 | f36.jpg | [Wikimedia Commons – Studio Incendo](https://commons.wikimedia.org/wiki/File:Tai_Po_Voting_queue-20200712.jpg) | CC BY 2.0 |
 | F4 | f4.jpg | [Wikimedia Commons – Andrew Dyer](https://commons.wikimedia.org/wiki/File:AtTheCuttingEdge.jpg) | CC BY-SA 2.0 |
 | F40 | f40.jpg | [Wikimedia Commons – Elena Chochkova](https://commons.wikimedia.org/wiki/File:P1030323.JPG) | CC BY-SA 4.0 |
-| F41 | f41.jpg | [Wikimedia Commons – 221.20 (talk)](https://commons.wikimedia.org/wiki/File:Ky%C5%ABshirataki_station01.JPG) | Public domain |
 | F42 | f42.jpg | [Wikimedia Commons – Klein Tools](https://commons.wikimedia.org/wiki/File:Tape_Measure_25%27_Klein_Tools.jpg) | CC BY-SA 4.0 |
 | F43 | f43.jpg | [Wikimedia Commons – Cvmontuy](https://commons.wikimedia.org/wiki/File:Cell_Tower_Ciudad_del_Carmen2020.jpg) | CC BY-SA 4.0 |
 | F44 | f44.jpg | [Wikimedia Commons – Ehsan Akhgari](https://commons.wikimedia.org/wiki/File:In-page_pop-up_window_advertisement.jpg) | MPL 2 |

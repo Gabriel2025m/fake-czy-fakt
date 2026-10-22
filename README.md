@@ -32,7 +32,7 @@ Ataki (działają w następnej turze wybranego gracza): ⏳ Pośpiech (połowa c
 Wartości zmienia się na górze `app.js` (`DLUGOSC`, `POZIOM`).
 
 ## Pytania
-Są w `questions.js`: 150 pytań z plików `prawdziwe_klos.xlsx` (88 prawdziwych) i `likfake.xlsx` (62 fake; dwa fake'i o prawdziwych osobach, F8 i F32, usunięto). Każde ma poziom (łatwy / normalny / trudny, mniej więcej po 50) oraz numer z Excela (`nr`: P101, F12 itd.), więc łatwo znaleźć i przenieść wiersz na inny poziom.
+Są w `questions.js`: 149 pytań z plików `prawdziwe_klos.xlsx` (88 prawdziwych) i `likfake.xlsx` (61 fake; usunięto F8 i F32 – fake'i o prawdziwych osobach – oraz F41, którego oznaczenie było wątpliwe). Każde ma poziom (łatwy / normalny / trudny, mniej więcej po 50) oraz numer z Excela (`nr`: P101, F12 itd.), więc łatwo znaleźć i przenieść wiersz na inny poziom.
 
 - treść posta = „Nagłówek”, wyjaśnienie po odpowiedzi = „Opis”,
 - lupa (−25%) pokazuje domenę źródła z kolumny „Źródło / weryfikacja”, a pełny link jest widoczny po odpowiedzi,
