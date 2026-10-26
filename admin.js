@@ -137,7 +137,7 @@ function przodPU(key) {
     <div class="pu-panel">
       <div class="pu-ico">${d.ikona}</div>
       <div class="pu-nm">${esc(d.nazwa)}</div>
-      <div class="pu-ds fit" data-max="10" data-min="6.5">${esc(d.opisKarty || d.opis)}</div>
+      <div class="pu-ds fit" data-max="10" data-min="6.5">${esc(d.opisKarty)}</div>
       <div class="pu-tp">${d.typ === "atak" ? "Atak na innego gracza" : "Pomoc dla Ciebie"}</div>
     </div>
     <div class="c-foot"><span class="c-credit">${PODPIS}</span></div>
@@ -176,7 +176,7 @@ function talia() {
   const out = wybraneKarty().map(k => [przodPytania(k), tylPytania(k)]);
   if (A.ust.powerupy) {
     const n = Math.max(0, Math.min(10, +A.ust.kopiePU || 0));
-    for (const key of Object.keys(POWERUPY)) for (let i = 0; i < n; i++) out.push([przodPU(key), tylPU()]);
+    for (const key of POWERUPY_KARTY) for (let i = 0; i < n; i++) out.push([przodPU(key), tylPU()]);
   }
   if (A.ust.zasady) out.push(...kartyZasad());   // dodatki.js
   return out;
@@ -362,8 +362,12 @@ function render() {
   document.getElementById("tab-cards").hidden = A.tab !== "cards";
   document.getElementById("tab-preview").hidden = A.tab !== "preview";
   document.getElementById("tab-extras").hidden = A.tab !== "extras";
+  document.getElementById("tab-makieta").hidden = A.tab !== "makieta";
   renderSide();
-  if (A.tab === "cards") renderCards(); else if (A.tab === "extras") renderExtras(); else renderPreview();
+  if (A.tab === "cards") renderCards();
+  else if (A.tab === "extras") renderExtras();
+  else if (A.tab === "makieta") renderMakieta(DRUK === "3d");   // makieta.js
+  else renderPreview();
 }
 
 // ═════════════ Edytor karty ═════════════
@@ -602,12 +606,15 @@ const DRUK = new URLSearchParams(location.search).get("druk");
 if (DRUK) {
   A.ust = { ...DOMYSLNE };
   A.poprawki = {};
-  A.tab = DRUK === "dodatki" ? "extras" : "preview";
+  A.tab = { dodatki: "extras", "3d": "makieta" }[DRUK] || "preview";
   document.body.classList.add("tylko-druk");
+  // ?druk=3d&widok=stol – jedno ujęcie makiety na cały ekran (do zrzutów PNG)
+  if (DRUK === "3d") ustawWidokStartowy(new URLSearchParams(location.search).get("widok"));
 }
 
 render();
 document.fonts.ready.then(() => {
   if (A.tab === "preview") dopasujTeksty(document.getElementById("sheets"));
   if (A.tab === "extras") dopasujTeksty(document.getElementById("extras"));
+  if (A.tab === "makieta") dopasujTeksty(document.getElementById("makieta"));
 });

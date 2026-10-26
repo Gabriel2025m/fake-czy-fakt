@@ -6,19 +6,18 @@
 
 const GRA_KARCIANA = {
   gracze: "2–8 graczy",
-  wiek: "12+",
-  czas: "15–40 min",
+  czas: "15–30 min",
+  sekundy: 15,
   dlugosc: { szybka: { label: "Szybka", rundy: 6 }, normalna: { label: "Normalna", rundy: 10 }, dluga: { label: "Długa", rundy: 14 } },
   poziomy: [
-    { kropki: 1, label: "Łatwy", sekundy: 25 },
-    { kropki: 2, label: "Normalny", sekundy: 18 },
-    { kropki: 3, label: "Trudny", sekundy: 12 },
+    { kropki: 1, label: "Łatwy" },
+    { kropki: 2, label: "Normalny" },
+    { kropki: 3, label: "Trudny" },
   ],
 };
+const metaGry = () => `${GRA_KARCIANA.gracze} · ${GRA_KARCIANA.czas}`;
 
 const kropkiTxt = n => "●".repeat(n);
-const zloteTxt = () => Object.entries(GRA_KARCIANA.dlugosc)
-  .map(([k, d]) => `${d.label.toLowerCase()}: ${ZLOTE_RUNDY[k].join(", ")}`).join(" · ");
 
 // „1 karta”, „2 karty”, „5 kart”
 function kartOdm(n) {
@@ -27,32 +26,40 @@ function kartOdm(n) {
   return j >= 2 && j <= 4 && (d < 12 || d > 14) ? "karty" : "kart";
 }
 
+// Ile kart czego jest w talii (zależy od ustawień strony).
+function sklad() {
+  const pytania = wybraneKarty().length;
+  const pu = A.ust.powerupy ? POWERUPY_KARTY.length * Math.max(0, Math.min(10, +A.ust.kopiePU || 0)) : 0;
+  return { pytania, pu, zasady: A.ust.zasady ? 4 : 0 };
+}
+
 // ── karty zasad (4 karty, przód + tył – mieszczą się w pudełku razem z talią) ──
 function panelyZasad() {
   const P = GRA_KARCIANA;
   return [
-    { t: "Zasady gry", b: `<p class="r-lead">Przeczytaj post z sieci i zdecyduj: <b class="f">FAKE</b> czy <b class="r">PRAWDA</b>? Za dobre odpowiedzi zdobywasz punkty.</p>
-        <p class="r-meta">${P.gracze} · ${P.wiek} · ${P.czas}</p>
-        <p>Potrzebne: stoper (np. w telefonie) i kartka do zapisywania punktów.</p>` },
-    { t: "1. Długość gry", b: `<p>Wybierzcie, ile rund gracie. W rundzie każdy gracz odpowiada raz.</p>
-        <ul>${Object.values(P.dlugosc).map(d => `<li><b>${d.label}</b>: ${d.rundy} rund</li>`).join("")}</ul>` },
-    { t: "2. Poziom", b: `<p>Kropki na karcie to poziom. Grajcie jednym poziomem albo zmieszajcie kilka (np. ●● i ●●●).</p>
-        <ul>${P.poziomy.map(l => `<li><b>${kropkiTxt(l.kropki)}</b> ${l.label}: <b>${l.sekundy} s</b></li>`).join("")}</ul>
-        <p>Czas na odpowiedź zależy od kropek na karcie.</p>` },
-    { t: "3. Przygotowanie", b: `<p>Potasujcie pytania i połóżcie talię <b>pytaniem do góry</b>: odpowiedź jest na spodzie karty.</p>
-        <p>Power-upy potasujcie i połóżcie obok, zakryte.</p>
-        <p>Zaczyna najmłodszy gracz. Zapisuje w tajemnicy numer <b>losowej rundy</b> (nie złotej).</p>` },
-    { t: "4. Twoja tura", b: `<ol><li>Sąsiad z lewej włącza stoper.</li>
-        <li>Przeczytaj na głos nagłówek z wierzchniej karty.</li>
-        <li>Możesz użyć lupy albo zagrać power-upy.</li>
-        <li>Powiedz <b class="f">FAKE</b> albo <b class="r">PRAWDA</b>, zanim minie czas.</li>
-        <li>Odwróć kartę i przeczytaj wyjaśnienie na głos.</li></ol>` },
-    { t: "5. Punkty i lupa", b: `<ul><li>Dobra odpowiedź: <b>2 pkt</b></li><li>Dobra po użyciu lupy: <b>1 pkt</b></li><li>Zła albo po czasie: <b>0 pkt</b></li></ul>
-        <p><b>Lupa:</b> sąsiad z lewej zagląda pod kartę i czyta Ci tylko linijkę „Źródło”.</p>` },
-    { t: "6. Power-upy", b: `<p><b>Złote rundy</b> (${zloteTxt()}): po rundzie gracz z największą liczbą punktów w tej rundzie dobiera 3 power-upy i zatrzymuje 1. Remis? Każdy remisujący.</p>
-        <p><b>Losowa runda:</b> na jej początku każdy dobiera 1 power-up.</p>` },
-    { t: "7. Zagrywanie i koniec", b: `<p>Power-up zagrywasz w swojej turze, po przeczytaniu pytania, a przed odpowiedzią. Pomoc działa od razu, atak w następnej turze wybranego gracza. Tarczę zagrywasz, gdy ktoś Cię atakuje.</p>
-        <p><b>Koniec:</b> +1 pkt za każdy niewykorzystany power-up. Wygrywa najwięcej punktów; remis rozstrzyga dogrywka na kartach ●●●.</p>` },
+    { t: "Zasady gry", b: `<p class="r-lead">Wylosuj post z sieci i zdecyduj: <b class="f">FAKE</b> czy <b class="r">PRAWDA</b>? Każda dobra odpowiedź to zdobyta karta.</p>
+        <p class="r-meta">${metaGry()}</p>
+        <p>Potrzebne: klepsydra ${P.sekundy} s (albo stoper w telefonie). Nie trzeba zapisywać punktów.</p>` },
+    { t: "1. Długość gry", b: `<p>Wybierzcie, ile rund gracie. W rundzie każdy gracz losuje raz.</p>
+        <ul>${Object.values(P.dlugosc).map(d => `<li><b>${d.label}</b>: ${d.rundy} rund</li>`).join("")}</ul>
+        <p>Gra kończy się też wtedy, gdy w kupce skończą się pytania.</p>` },
+    { t: "2. Poziom", b: `<p>Kropki na karcie to poziom: <b>●</b> łatwy, <b>●●</b> normalny, <b>●●●</b> trudny.</p>
+        <p>Weźcie karty jednego poziomu albo je <b>zmieszajcie</b> (np. ●● z ●●● albo całą talię).</p>
+        <p>Czas jest zawsze ten sam: <b>${P.sekundy} s</b>.</p>` },
+    { t: "3. Przygotowanie", b: `<p>Wymieszajcie wybrane karty pytań <b>razem z power-upami</b> i rozłóżcie w jedną luźną kupkę na środku stołu.</p>
+        <p>Klepsydrę postawcie obok. Zaczyna najmłodszy gracz, potem kolej idzie w lewo.</p>` },
+    { t: "4. Twoja tura", b: `<ol><li>Z <b>zamkniętymi oczami</b> wyciągnij kartę z kupki – nie z wierzchu.</li>
+        <li>Power-up? Zatrzymaj go i losuj dalej, aż trafisz na pytanie.</li>
+        <li>Odwróć klepsydrę i przeczytaj post na głos.</li>
+        <li>Powiedz <b class="f">FAKE</b> albo <b class="r">PRAWDA</b>, zanim przesypie się piasek.</li>
+        <li>Odwróć kartę i przeczytaj wyjaśnienie.</li></ol>` },
+    { t: "5. Punkty", b: `<ul><li><b>Dobrze:</b> zatrzymujesz kartę pytania – to Twój punkt.</li>
+        <li><b>Źle albo po czasie:</b> karta idzie na stos odrzuconych.</li></ul>
+        <p>Nie ma tabeli wyników: punkty to karty pytań, które leżą przed Tobą.</p>` },
+    { t: "6. Power-upy", b: `<p>Power-upy wylosowane z kupki trzymasz w ręce, tak żeby inni ich nie widzieli.</p>
+        <p>Zagrywasz je w swojej turze, po przeczytaniu posta, a przed odpowiedzią. <b>Pomoc</b> działa od razu, <b>atak</b> w następnej turze wybranego gracza. <b>Tarczę</b> zagrywasz, gdy ktoś Cię atakuje.</p>` },
+    { t: "7. Koniec gry", b: `<p>Po ostatniej rundzie każdy liczy swoje karty pytań. Każdy niewykorzystany power-up to <b>+1</b>.</p>
+        <p>Wygrywa gracz z największą liczbą punktów. Remis? Dogrywka: remisujący losują po kolei, aż ktoś się pomyli.</p>` },
   ];
 }
 
@@ -77,67 +84,71 @@ function kartyZasad() {
 function naglowekA4(podtytul) {
   return `<header class="i-head">
     <div class="i-logo"><span class="i-fak">FAK</span><span class="i-frac"><i class="e">E</i><b>czy</b><i class="t">T</i></span></div>
-    <div class="i-title"><b>${podtytul}</b><span>${GRA_KARCIANA.gracze} · ${GRA_KARCIANA.wiek} · ${GRA_KARCIANA.czas}</span><small>${PODPIS}</small></div>
+    <div class="i-title"><b>${podtytul}</b><span>${metaGry()}</span><small>${PODPIS}</small></div>
   </header>`;
 }
 
 function instrukcjaStrona1() {
-  const P = GRA_KARCIANA;
+  const P = GRA_KARCIANA, k = sklad();
   return `<div class="sheet a4 instr">${naglowekA4("Zasady gry karcianej")}
   <div class="i-cols">
     <section><h3>Cel gry</h3>
-      <p>Każda karta to post z sieci. Twoim zadaniem jest rozpoznać, czy to <b class="f">FAKE</b> (dezinformacja, mit, manipulacja), czy <b class="r">PRAWDA</b>. Za dobre odpowiedzi zdobywasz punkty. Wygrywa gracz, który na koniec ma ich najwięcej. Gra nie potrzebuje prowadzącego: grają tylko gracze.</p></section>
+      <p>Każda karta pytania to post z sieci. Rozpoznaj, czy to <b class="f">FAKE</b> (dezinformacja, mit, manipulacja), czy <b class="r">PRAWDA</b>. Za każdą dobrą odpowiedź zatrzymujesz kartę. Wygrywa gracz, który na koniec ma najwięcej kart. Gra nie potrzebuje prowadzącego: grają tylko gracze.</p></section>
     <section><h3>Zawartość</h3>
-      <p>147 kart pytań (z przodu post, z tyłu odpowiedź i wyjaśnienie), 24 karty power-upów, 4 karty zasad. Potrzebne: stoper (np. w telefonie) oraz kartka i długopis albo tabela wyników z drugiej strony instrukcji.</p></section>
+      <p>${k.pytania} ${kartOdm(k.pytania)} pytań (z przodu post, z tyłu odpowiedź i wyjaśnienie), ${k.pu} ${kartOdm(k.pu)} power-upów i ${k.zasady} karty zasad. Potrzebna jest też klepsydra ${P.sekundy}-sekundowa albo stoper w telefonie.</p></section>
     <section><h3>1. Długość gry</h3>
-      <p>W jednej rundzie każdy gracz odpowiada na jedno pytanie.</p>
-      <table class="i-tab"><tr><th>Gra</th><th>Rund</th><th>Złote rundy</th></tr>
-        ${Object.entries(P.dlugosc).map(([k, d]) => `<tr><td>${d.label}</td><td>${d.rundy}</td><td>${ZLOTE_RUNDY[k].join(", ")}</td></tr>`).join("")}</table></section>
+      <p>W jednej rundzie każdy gracz losuje i odpowiada raz.</p>
+      <table class="i-tab"><tr><th>Gra</th><th>Rund</th></tr>
+        ${Object.values(P.dlugosc).map(d => `<tr><td>${d.label}</td><td>${d.rundy}</td></tr>`).join("")}</table>
+      <p>Jeśli w kupce skończą się pytania, gra kończy się wcześniej.</p></section>
     <section><h3>2. Poziom trudności</h3>
-      <p>Kropki w rogu karty pokazują poziom. Wybierzcie karty jednego poziomu albo <b>zmieszajcie</b> kilka, np. ●● z ●●● albo całą talię. Czas na odpowiedź zawsze zależy od kropek na karcie:</p>
-      <table class="i-tab"><tr><th>Kropki</th><th>Poziom</th><th>Czas</th></tr>
-        ${P.poziomy.map(l => `<tr><td>${kropkiTxt(l.kropki)}</td><td>${l.label}</td><td>${l.sekundy} s</td></tr>`).join("")}</table>
-      <p class="i-note">Jeśli przy wielu graczach zabraknie kart z wybranego poziomu, dołóżcie karty z sąsiedniego.</p></section>
+      <p>Kropki w rogu karty pytania pokazują poziom:</p>
+      <table class="i-tab"><tr><th>Kropki</th><th>Poziom</th></tr>
+        ${P.poziomy.map(l => `<tr><td>${kropkiTxt(l.kropki)}</td><td>${l.label}</td></tr>`).join("")}</table>
+      <p>Przed grą wybierzcie karty jednego poziomu albo je <b>zmieszajcie</b>: np. ●● z ●●●, a dla młodszych graczy ● z ●●. Można też grać całą talią. Czas na odpowiedź jest zawsze taki sam: <b>${P.sekundy} sekund</b>.</p></section>
     <section><h3>3. Przygotowanie</h3>
-      <ul><li>Potasujcie wybrane karty pytań i połóżcie talię <b>pytaniem (przodem) do góry</b>. Odpowiedź jest na spodzie karty, więc nikt jej nie widzi.</li>
-      <li>Potasujcie karty power-upów i połóżcie je obok, napisem POWER-UP do góry.</li>
-      <li>Zaczyna najmłodszy gracz. Zanim zacznie, zapisuje w tajemnicy numer <b>losowej rundy</b> (dowolna runda poza pierwszą i złotymi).</li></ul></section>
+      <ul><li>Wymieszajcie wybrane karty pytań <b>razem z kartami power-upów</b>.</li>
+      <li>Rozłóżcie je w jedną luźną kupkę na środku stołu.</li>
+      <li>Postawcie obok klepsydrę. Zaczyna najmłodszy gracz, potem kolej przechodzi w lewo.</li></ul></section>
     <section><h3>4. Twoja tura</h3>
-      <ol><li>Sąsiad z lewej włącza stoper z czasem z karty.</li>
-      <li>Czytasz na głos nagłówek z wierzchniej karty i oglądasz zdjęcie.</li>
-      <li>Przed odpowiedzią możesz użyć lupy i zagrać power-upy.</li>
-      <li>Mówisz <b class="f">FAKE</b> albo <b class="r">PRAWDA</b>, zanim minie czas. Brak odpowiedzi to zła odpowiedź.</li>
-      <li>Odwracasz kartę: pieczątka pokazuje odpowiedź. Czytasz wyjaśnienie na głos, żeby wszyscy się czegoś dowiedzieli.</li>
-      <li>Zapisujecie punkty, karta trafia na stos odrzuconych, a kolej przechodzi na lewo.</li></ol></section>
-    <section><h3>5. Punkty i lupa</h3>
-      <ul><li>Dobra odpowiedź: <b>2 pkt</b>.</li><li>Dobra odpowiedź po użyciu lupy: <b>1 pkt</b>.</li><li>Zła odpowiedź albo brak odpowiedzi: <b>0 pkt</b>.</li></ul>
-      <p><b>Lupa</b> to sprawdzenie źródła, jak w prawdziwym życiu: sąsiad z lewej zagląda pod kartę i czyta Ci na głos <b>tylko</b> linijkę „Źródło”. Pewność kosztuje 1 punkt.</p></section>
+      <ol><li>Z <b>zamkniętymi oczami</b> wyciągnij jedną kartę z dowolnego miejsca w kupce. Nie wolno brać karty z wierzchu.</li>
+      <li>Jeśli to <b>power-up</b>, zatrzymaj go i losuj dalej, aż trafisz na kartę pytania.</li>
+      <li>Odwróć klepsydrę i przeczytaj post na głos.</li>
+      <li>Powiedz <b class="f">FAKE</b> albo <b class="r">PRAWDA</b>, zanim przesypie się piasek.</li>
+      <li>Odwróć kartę: pieczątka pokazuje odpowiedź. Przeczytaj wyjaśnienie na głos, żeby wszyscy się czegoś dowiedzieli.</li></ol></section>
+    <section><h3>5. Punkty</h3>
+      <ul><li><b>Dobra odpowiedź:</b> zatrzymujesz kartę pytania i kładziesz ją przed sobą. Jedna karta to jeden punkt.</li>
+      <li><b>Zła odpowiedź albo brak odpowiedzi w czasie:</b> karta idzie na stos odrzuconych.</li></ul>
+      <p>Nie zapisujecie wyników: wystarczy policzyć karty.</p></section>
     <section><h3>6. Power-upy</h3>
-      <p><b>Złote rundy:</b> po złotej rundzie gracz, który zdobył w niej najwięcej punktów, dobiera 3 power-upy, wybiera 1, a 2 wtasowuje z powrotem. Przy remisie wybiera każdy z remisujących (po kolei). Gdy nikt nie zdobył punktów, nikt nie dobiera.</p>
-      <p><b>Losowa runda:</b> gdy zaczyna się runda zapisana na początku, każdy gracz dobiera 1 power-up w ciemno.</p>
-      <p><b>Zagrywanie:</b> w swojej turze, po przeczytaniu pytania, a przed odpowiedzią. Możesz zagrać kilka różnych power-upów. <b>Pomoc</b> działa od razu na Twoje pytanie. <b>Atak</b> działa w najbliższej turze wskazanego gracza. <b>Tarczę</b> zagrywasz w dowolnej chwili, gdy ktoś Cię atakuje. Zagrane karty idą na stos odrzuconych.</p></section>
+      <p>Power-upy są wmieszane w kupkę, więc trafiają się przy losowaniu. Trzymasz je w ręce, tak żeby inni ich nie widzieli.</p>
+      <p><b>Zagrywanie:</b> w swojej turze, po przeczytaniu posta, a przed odpowiedzią; możesz zagrać power-up wylosowany w tej samej turze. <b>Pomoc</b> działa od razu na Twoje pytanie. <b>Atak</b> działa w najbliższej turze wskazanego gracza. <b>Tarczę</b> zagrywasz w dowolnej chwili, gdy ktoś Cię atakuje. Zagrane karty idą na stos odrzuconych.</p></section>
     <section><h3>7. Koniec gry</h3>
-      <p>Gra kończy się po ostatniej rundzie. Każdy niewykorzystany power-up daje <b>+1 pkt</b>. Wygrywa gracz z największą liczbą punktów. Przy remisie dogrywka: remisujący odpowiadają po kolei na karty ●●●, aż ktoś się pomyli.</p></section>
+      <p>Gra kończy się po ostatniej rundzie. Każdy liczy swoje karty pytań, a każdy niewykorzystany power-up dolicza jako <b>+1</b>. Wygrywa gracz z największą liczbą punktów. Przy remisie dogrywka: remisujący losują po kolei, aż ktoś się pomyli.</p></section>
   </div>
   <footer class="i-foot">Wersja online tej gry: <b>gra.g-mal.com.pl</b></footer>
   </div>`;
 }
 
 function instrukcjaStrona2() {
-  const pu = Object.values(POWERUPY);
+  const pu = POWERUPY_KARTY.map(k => POWERUPY[k]);
   const wiersz = d => `<tr><td class="ic">${d.ikona}</td><td><b>${esc(d.nazwa)}</b></td><td>${esc(d.opisKarty)}</td></tr>`;
-  const rundy = 14, gracze = 6;
-  return `<div class="sheet a4 instr">${naglowekA4("Power-upy i tabela wyników")}
+  const kroki = [
+    ["🙈", "Losuj", "z zamkniętymi oczami, nie z wierzchu"],
+    ["⚡", "Power-up?", "zatrzymaj i losuj dalej"],
+    ["⏳", "Klepsydra", `${GRA_KARCIANA.sekundy} sekund`],
+    ["🗣️", "FAKE czy PRAWDA?", "odpowiedz na głos"],
+    ["🔄", "Odwróć kartę", "dobrze = karta jest Twoja"],
+  ];
+  return `<div class="sheet a4 instr">${naglowekA4("Power-upy i przebieg tury")}
   <div class="i-pu">
     <section><h3 class="r">Pomoc dla Ciebie</h3><table class="i-putab">${pu.filter(d => d.typ === "pomoc").map(wiersz).join("")}</table></section>
     <section><h3 class="f">Ataki na innych</h3><table class="i-putab">${pu.filter(d => d.typ === "atak").map(wiersz).join("")}</table></section>
   </div>
-  <section class="i-score"><h3>Tabela wyników</h3>
-    <table class="i-wyn"><tr><th>Runda</th>${Array.from({ length: gracze }, () => `<th class="name"></th>`).join("")}</tr>
-      ${Array.from({ length: rundy }, (_, r) => `<tr><td>${r + 1}${Object.values(ZLOTE_RUNDY).some(z => z.includes(r + 1)) ? ` <small>★</small>` : ""}</td>${"<td></td>".repeat(gracze)}</tr>`).join("")}
-      <tr class="sum"><td>Power-upy</td>${"<td></td>".repeat(gracze)}</tr>
-      <tr class="sum"><td>Suma</td>${"<td></td>".repeat(gracze)}</tr></table>
-    <p class="i-note">★ możliwe złote rundy (zależą od długości gry). Losowa runda: ……… Wpisz imiona w pierwszym wierszu.</p></section>
+  <section><h3>Tura w skrócie</h3>
+    <div class="i-kroki">${kroki.map(([ic, t, d], i) => `<div class="i-krok"><span class="ic">${ic}</span><b>${i + 1}. ${t}</b><small>${d}</small></div>`).join("")}</div></section>
+  <section class="i-makieta"><h3>Tak wygląda gra</h3>
+    <div class="i-foto"><img src="makieta/stol.png" alt="Rozgrywka na stole"><img src="makieta/pudelko.png" alt="Pudełko z grą"></div></section>
   <footer class="i-foot">${PODPIS}</footer>
   </div>`;
 }
@@ -204,34 +215,34 @@ function arkuszPudelka(tytul, opis, d, ozdoby) {
 
 function pudelkoArkusze() {
   const { ile, spod, wieczko } = wymiaryPudelka();
-  const tytulBoczny = `<div class="bx-side"><span class="f">FAKE</span> <span class="czy">czy</span> <span class="r">FAKT?</span></div>`;
-  const infoBoczne = `<div class="bx-side small">${GRA_KARCIANA.gracze} · ${GRA_KARCIANA.wiek} · ${GRA_KARCIANA.czas}</div>`;
-  // Wieczko: ścianki zaginane w dół – „góra” napisów wskazuje linię zgięcia.
+  // Ścianki obu części są bez napisów – tylko tło w kolorach gry.
+  const boki = { n: "", s: "", w: "", e: "" };
   const wieczkoOzdoby = {
-    srodek: `<div class="bx-top">
-        <div class="bx-logo"><span class="i-fak">FAK</span><span class="i-frac"><i class="e">E</i><b>czy</b><i class="t">T</i></span></div>
-        <div class="bx-name"><span class="f">FAKE</span> <span class="czy">czy</span> <span class="r">FAKT?</span></div>
-        <div class="bx-tag">Gra karciana o rozpoznawaniu dezinformacji</div>
-        <div class="bx-meta">${GRA_KARCIANA.gracze}<br>${GRA_KARCIANA.wiek} · ${GRA_KARCIANA.czas}</div>
-        <div class="bx-credit">${PODPIS}</div>
-      </div>`,
-    n: tytulBoczny, s: tytulBoczny, w: infoBoczne, e: infoBoczne,
-    rot: { n: 180, s: 0, w: 90, e: -90 },
+    srodek: gornaPokrywa(),
+    ...boki, rot: { n: 180, s: 0, w: 90, e: -90 },
   };
-  // Spód: ścianki zaginane w górę; widać ich dolną część spod wieczka.
-  const spodBok = `<div class="bx-side small low">${ile} kart · ${PODPIS}</div>`;
   const spodOzdoby = {
     srodek: `<div class="bx-bottom"><div class="bx-name"><span class="f">FAKE</span> <span class="czy">czy</span> <span class="r">FAKT?</span></div>
         <p>W pudełku: ${ile} ${kartOdm(ile)} (pytania, power-upy i karty zasad).</p>
         <p>Gra edukacyjna o krytycznym myśleniu i odporności na dezinformację. Wersja online: gra.g-mal.com.pl</p>
         <div class="bx-credit">${PODPIS}</div></div>`,
-    n: spodBok, s: spodBok, w: spodBok, e: spodBok,
-    rot: { n: 0, s: 180, w: -90, e: 90 },
+    ...boki, rot: { n: 0, s: 180, w: -90, e: 90 },
   };
   return [
     arkuszPudelka("Pudełko – wieczko", "wytnij, zegnij do środka i sklej zakładki", wieczko, wieczkoOzdoby),
     arkuszPudelka("Pudełko – spód", "wytnij, zegnij i sklej; drukuj na papierze 250–300 g/m²", spod, spodOzdoby),
   ];
+}
+
+// Wierzch wieczka (też na makiecie 3D).
+function gornaPokrywa() {
+  return `<div class="bx-top">
+      <div class="bx-logo"><span class="i-fak">FAK</span><span class="i-frac"><i class="e">E</i><b>czy</b><i class="t">T</i></span></div>
+      <div class="bx-name"><span class="f">FAKE</span> <span class="czy">czy</span> <span class="r">FAKT?</span></div>
+      <div class="bx-tag">Gra karciana o rozpoznawaniu dezinformacji</div>
+      <div class="bx-meta">${GRA_KARCIANA.gracze}<br>${GRA_KARCIANA.czas}</div>
+      <div class="bx-credit">${PODPIS}</div>
+    </div>`;
 }
 
 function dodatkiArkusze() {
