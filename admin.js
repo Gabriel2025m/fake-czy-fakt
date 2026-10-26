@@ -20,7 +20,7 @@ const POLA = ["poziom", "prawda", "autor", "handle", "tekst", "obrazek", "zrodlo
 const DOMYSLNE = {
   styl: "gra", rozmiar: "poker", odwracanie: "dluga", przesX: 0, przesY: 0, odstep: 0,
   znaczniki: true, ramka: true, zdjecia: true, tyly: true,
-  powerupy: true, kopiePU: 2,
+  powerupy: true, kopiePU: 2, zasady: true, grubosc: 0.3,
 };
 
 const A = {
@@ -137,7 +137,7 @@ function przodPU(key) {
     <div class="pu-panel">
       <div class="pu-ico">${d.ikona}</div>
       <div class="pu-nm">${esc(d.nazwa)}</div>
-      <div class="pu-ds fit" data-max="10" data-min="6.5">${esc(d.opis)}</div>
+      <div class="pu-ds fit" data-max="10" data-min="6.5">${esc(d.opisKarty || d.opis)}</div>
       <div class="pu-tp">${d.typ === "atak" ? "Atak na innego gracza" : "Pomoc dla Ciebie"}</div>
     </div>
     <div class="c-foot"><span class="c-credit">${PODPIS}</span></div>
@@ -178,6 +178,7 @@ function talia() {
     const n = Math.max(0, Math.min(10, +A.ust.kopiePU || 0));
     for (const key of Object.keys(POWERUPY)) for (let i = 0; i < n; i++) out.push([przodPU(key), tylPU()]);
   }
+  if (A.ust.zasady) out.push(...kartyZasad());   // dodatki.js
   return out;
 }
 
@@ -280,6 +281,15 @@ function renderSide() {
       <button class="btn primary" data-a="print">Drukuj</button>
       <button class="btn" data-a="test">Strona testowa</button>
     </div>
+    <h2>Wersja karciana</h2>
+    <label class="chk"><input type="checkbox" data-u="zasady" ${u.zasady ? "checked" : ""}> Karty zasad w talii (4 karty)</label>
+    <label class="fld inline">Grubość karty (mm)<input type="number" min="0.15" max="1" step="0.05" data-u="grubosc" value="${u.grubosc}"></label>
+    <p class="hint">Od grubości zależy wysokość pudełka. Zwykły papier 250–300 g/m² ma ok. 0,3 mm.</p>
+    <div class="btns col">
+      <a class="btn" href="pdf/fake-czy-fakt-karty.pdf" download>Pobierz PDF: karty</a>
+      <a class="btn" href="pdf/fake-czy-fakt-pudelko-instrukcja.pdf" download>Pobierz PDF: pudełko i instrukcja</a>
+    </div>
+    <p class="hint">Gotowe pliki PDF mają ustawienia domyślne i oryginalne karty. Żeby wydrukować własne poprawki, użyj przycisku „Drukuj” i wybierz „Zapisz jako PDF”.</p>
     <h2>Dane</h2>
     <div class="btns col">
       <button class="btn" data-a="new">+ Nowa karta</button>
@@ -334,12 +344,26 @@ function renderPreview() {
   box.querySelectorAll("img").forEach(img => { if (!img.complete) img.addEventListener("load", () => dopasujTeksty(img.closest(".card")), { once: true }); });
 }
 
+function renderExtras() {
+  const { ile, spod, wieczko } = wymiaryPudelka();
+  const zaDuze = [spod, wieczko].some(d => d.W + 2 * d.H > PAPIER.w - 12 || d.L + 2 * d.H > PAPIER.h - 30);
+  document.getElementById("extras-bar").innerHTML = `
+    <span>Pudełko na ${ile} ${kartOdm(ile)} (spód ${spod.W} × ${spod.L} × ${spod.H} mm) i instrukcja A4 · 4 strony</span>
+    ${zaDuze ? `<b class="testinfo">Talia jest za gruba na jedno pudełko z kartki A4 – zmniejsz liczbę kart albo podziel je na dwa pudełka.</b>` : ""}
+    <span class="hint">Drukuj jednostronnie w skali 100%. Pudełko najlepiej na papierze 250–300 g/m², instrukcję na zwykłym papierze.</span>
+    <button class="btn primary small" data-a="print">Drukuj</button>`;
+  const box = document.getElementById("extras");
+  box.innerHTML = dodatkiArkusze();
+  requestAnimationFrame(() => dopasujTeksty(box));
+}
+
 function render() {
   document.querySelectorAll("#tabs button").forEach(b => b.classList.toggle("on", b.dataset.tab === A.tab));
   document.getElementById("tab-cards").hidden = A.tab !== "cards";
   document.getElementById("tab-preview").hidden = A.tab !== "preview";
+  document.getElementById("tab-extras").hidden = A.tab !== "extras";
   renderSide();
-  if (A.tab === "cards") renderCards(); else renderPreview();
+  if (A.tab === "cards") renderCards(); else if (A.tab === "extras") renderExtras(); else renderPreview();
 }
 
 // ═════════════ Edytor karty ═════════════
@@ -460,9 +484,10 @@ const PYTANIA_NAGLOWEK = `// Baza pytań – wygenerowana na stronie z kartami (
 // ═════════════ Zdarzenia ═════════════
 const akcje = {
   print: () => {
-    A.tab = "preview";
+    if (A.tab !== "extras") A.tab = "preview";
     render();
-    document.fonts.ready.then(() => setTimeout(() => { dopasujTeksty(document.getElementById("sheets")); window.print(); }, 300));
+    const box = document.getElementById(A.tab === "extras" ? "extras" : "sheets");
+    document.fonts.ready.then(() => setTimeout(() => { dopasujTeksty(box); window.print(); }, 300));
   },
   test: () => { A.test = true; A.tab = "preview"; render(); },
   "test-off": () => { A.test = false; render(); },
@@ -528,7 +553,7 @@ document.addEventListener("input", e => {
     const v = t.type === "checkbox" ? t.checked : t.type === "number" ? +t.value : t.value;
     A.ust[t.dataset.u] = v;
     zapisz(KLUCZ_USTAWIEN, A.ust);
-    if (t.type === "number") { if (A.tab === "preview") renderPreview(); } else render();
+    if (t.type === "number") { if (A.tab === "preview") renderPreview(); else if (A.tab === "extras") renderExtras(); } else render();
   }
   if (t.dataset.e) {
     A.edytowana[t.dataset.e] = t.dataset.e === "prawda" ? t.value === "1" : t.value;
@@ -568,9 +593,21 @@ document.getElementById("import-file").addEventListener("change", async e => {
 });
 
 window.addEventListener("beforeprint", () => {
-  if (A.tab !== "preview") { A.tab = "preview"; render(); }
-  dopasujTeksty(document.getElementById("sheets"));
+  if (A.tab === "cards") { A.tab = "preview"; render(); }
+  dopasujTeksty(document.getElementById(A.tab === "extras" ? "extras" : "sheets"));
 });
 
+// ?druk=karty | ?druk=dodatki – sam wydruk z ustawieniami domyślnymi (do generowania gotowych PDF-ów).
+const DRUK = new URLSearchParams(location.search).get("druk");
+if (DRUK) {
+  A.ust = { ...DOMYSLNE };
+  A.poprawki = {};
+  A.tab = DRUK === "dodatki" ? "extras" : "preview";
+  document.body.classList.add("tylko-druk");
+}
+
 render();
-document.fonts.ready.then(() => { if (A.tab === "preview") dopasujTeksty(document.getElementById("sheets")); });
+document.fonts.ready.then(() => {
+  if (A.tab === "preview") dopasujTeksty(document.getElementById("sheets"));
+  if (A.tab === "extras") dopasujTeksty(document.getElementById("extras"));
+});
