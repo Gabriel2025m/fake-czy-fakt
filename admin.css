@@ -377,8 +377,22 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .light .bx-meta { color: #8a6d00; }
 .bx-credit { font-size: 6pt; font-weight: 700; opacity: .8; }
 .bx-credit b { color: #ff6b7d; }
+.bx-wall { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1.2mm; text-align: center; }
+.bx-wall.low { align-self: flex-end; }
+.bx-logo.sm { font-size: 22pt; }
+.bx-wall .bx-name { font-size: 15pt; }
+.m-wallbox { display: flex; align-items: center; justify-content: center; }
 .bx-bottom { width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; gap: 1.6mm; padding: 5mm; font-size: 7pt; line-height: 1.35; }
 .bx-bottom p { margin: 0; }
+
+/* ═════════ Ulotka ═════════ */
+.ulotka .cell { overflow: hidden; }
+.u-cover .bx-top { padding: 3mm; }
+.u-cover .bx-logo { font-size: 26pt; }
+.u-open { font-size: 7pt; font-weight: 700; opacity: .8; margin-top: 2mm; }
+.u-pu { list-style: none; padding: 0 !important; margin: 0; }
+.u-pu li { margin-bottom: 1.2mm; }
+.u-pu b { display: block; }
 
 /* ═════════ Makieta 3D ═════════ */
 #makieta-bar { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }

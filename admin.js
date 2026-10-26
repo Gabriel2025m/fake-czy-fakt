@@ -20,7 +20,7 @@ const POLA = ["poziom", "prawda", "autor", "handle", "tekst", "obrazek", "zrodlo
 const DOMYSLNE = {
   styl: "gra", rozmiar: "poker", odwracanie: "dluga", przesX: 0, przesY: 0, odstep: 0,
   znaczniki: true, ramka: true, zdjecia: true, tyly: true,
-  powerupy: true, kopiePU: 2, zasady: true, grubosc: 0.3,
+  powerupy: true, kompletyPU: "auto", zasady: true, grubosc: 0.3,
 };
 
 const A = {
@@ -168,6 +168,14 @@ function siatka() {
 }
 
 // Lista par [przód, tył] do wydruku.
+// Power-upy są wmieszane w kupkę pytań: 1 komplet na ok. 50 pytań, żeby trafiały się
+// mniej więcej co 6–7 losowanie, niezależnie od tego, ile pytań wybrano.
+const PYTAN_NA_KOMPLET = 50;
+function kompletyPU(auto = A.ust.kompletyPU === "auto") {
+  if (!auto) return Math.max(1, Math.min(10, +A.ust.kompletyPU || 1));
+  return Math.max(1, Math.round(wybraneKarty().length / PYTAN_NA_KOMPLET));
+}
+
 function talia() {
   if (A.test) {
     const s = siatka();
@@ -175,7 +183,7 @@ function talia() {
   }
   const out = wybraneKarty().map(k => [przodPytania(k), tylPytania(k)]);
   if (A.ust.powerupy) {
-    const n = Math.max(0, Math.min(10, +A.ust.kopiePU || 0));
+    const n = kompletyPU();
     for (const key of POWERUPY_KARTY) for (let i = 0; i < n; i++) out.push([przodPU(key), tylPU()]);
   }
   if (A.ust.zasady) out.push(...kartyZasad());   // dodatki.js
@@ -276,7 +284,10 @@ function renderSide() {
     <label class="chk"><input type="checkbox" data-u="zdjecia" ${u.zdjecia ? "checked" : ""}> Zdjęcia na kartach</label>
     <label class="chk"><input type="checkbox" data-u="tyly" ${u.tyly ? "checked" : ""}> Drukuj tyły (odpowiedzi)</label>
     <label class="chk"><input type="checkbox" data-u="powerupy" ${u.powerupy ? "checked" : ""}> Karty power-upów</label>
-    ${u.powerupy ? `<label class="fld inline">Kopii każdego power-upu<input type="number" min="1" max="10" data-u="kopiePU" value="${u.kopiePU}"></label>` : ""}
+    ${u.powerupy ? `<label class="fld">Komplety power-upów (komplet = ${POWERUPY_KARTY.length} kart, po 1 z każdego)<select data-u="kompletyPU">
+        <option value="auto" ${u.kompletyPU === "auto" ? "selected" : ""}>Automatycznie: ${kompletyPU(true)} (1 na ok. ${PYTAN_NA_KOMPLET} pytań)</option>
+        ${[1, 2, 3, 4, 5, 6].map(n => `<option value="${n}" ${String(u.kompletyPU) === String(n) ? "selected" : ""}>${n} (${n * POWERUPY_KARTY.length} kart)</option>`).join("")}
+      </select></label>` : ""}
     <div class="btns">
       <button class="btn primary" data-a="print">Drukuj</button>
       <button class="btn" data-a="test">Strona testowa</button>
@@ -333,6 +344,7 @@ function renderPreview() {
   const { html, strony, karty: ile, s } = arkusze();
   document.getElementById("preview-bar").innerHTML = `
     ${A.test ? `<b class="testinfo">Strona testowa.</b>` : ""}
+    ${A.test ? "" : `<span>${skladTxt()}</span>`}
     <span>${ile} kart · ${strony} ${strony === 1 ? "strona" : strony < 5 ? "strony" : "stron"} A4 · ${s.cols} × ${s.rows} na stronie</span>
     <span class="hint">Drukuj w skali 100% („rzeczywisty rozmiar”), bez dopasowania do strony, dwustronnie: ${A.ust.odwracanie === "dluga" ? "obracanie przez długą krawędź" : "obracanie przez krótką krawędź"}.</span>
     ${A.test ? `<button class="btn small" data-a="test-off">Wróć do kart</button>` : ""}
@@ -348,9 +360,9 @@ function renderExtras() {
   const { ile, spod, wieczko } = wymiaryPudelka();
   const zaDuze = [spod, wieczko].some(d => d.W + 2 * d.H > PAPIER.w - 12 || d.L + 2 * d.H > PAPIER.h - 30);
   document.getElementById("extras-bar").innerHTML = `
-    <span>Pudełko na ${ile} ${kartOdm(ile)} (spód ${spod.W} × ${spod.L} × ${spod.H} mm) i instrukcja A4 · 4 strony</span>
+    <span>Pudełko na ${ile} ${kartOdm(ile)} (spód ${spod.W} × ${spod.L} × ${spod.H} mm) , instrukcja A4 i składana ulotka · 5 stron</span>
     ${zaDuze ? `<b class="testinfo">Talia jest za gruba na jedno pudełko z kartki A4 – zmniejsz liczbę kart albo podziel je na dwa pudełka.</b>` : ""}
-    <span class="hint">Drukuj jednostronnie w skali 100%. Pudełko najlepiej na papierze 250–300 g/m², instrukcję na zwykłym papierze.</span>
+    <span class="hint">Drukuj jednostronnie w skali 100%. Pudełko najlepiej na papierze 250–300 g/m², instrukcję i ulotkę na zwykłym papierze.</span>
     <button class="btn primary small" data-a="print">Drukuj</button>`;
   const box = document.getElementById("extras");
   box.innerHTML = dodatkiArkusze();

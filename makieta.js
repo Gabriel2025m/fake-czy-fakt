@@ -5,6 +5,10 @@
 // Używa kart i pudełka z admin.js / dodatki.js, więc makieta zawsze wygląda jak wydruk.
 
 const WIDOKI = [
+  { id: "samo",         scena: "samo",    label: "Samo pudełko",       rx: 62, rz: -32, zoom: 1 },
+  { id: "samo-tyl",     scena: "samo",    label: "Samo pudełko – tył", rx: 62, rz: 148, zoom: 1 },
+  { id: "samo-bok",     scena: "samo",    label: "Samo pudełko – bok", rx: 84, rz: 90,  zoom: 1 },
+  { id: "samo-gora",    scena: "samo",    label: "Samo pudełko – góra", rx: 12, rz: -6, zoom: 1 },
   { id: "pudelko",      scena: "pudelko", label: "Pudełko",          rx: 60, rz: -28, zoom: 1 },
   { id: "pudelko-bok",  scena: "pudelko", label: "Pudełko z boku",   rx: 76, rz: 38,  zoom: 1 },
   { id: "pudelko-gora", scena: "pudelko", label: "Pudełko z góry",   rx: 18, rz: -8,  zoom: 1 },
@@ -48,31 +52,32 @@ function taliaBryla(x, y, z, rz, ile, gora) {
   return bryla({ x, y, z, w: r.w, l: r.h, h, rz, f: { gora, przod: bok, tyl: bok, lewa: bok, prawa: bok }, cls: "m-card" });
 }
 
-// Pudełko: spód + wieczko. Boki bez napisów (jak na wydruku).
+// Pudełko: spód + wieczko, z nadrukiem na bokach jak na wydruku.
 function pudelkoBryla(x, y, rz, otwarte) {
   const { spod, wieczko } = wymiaryPudelka();
+  const bok = (rodzaj, dol) => `<div class="m-boxbg m-wallbox">${bokPudelka(rodzaj, dol)}</div>`;
   const tlo = `<div class="m-boxbg"></div>`;
   const out = [];
   out.push(cien(x, y, wieczko.W + 6, wieczko.L + 6, rz));
   out.push(bryla({ x, y, w: spod.W, l: spod.L, h: spod.H, rz, cls: "m-box",
-    f: { dol: tlo, przod: tlo, tyl: tlo, lewa: tlo, prawa: tlo, ...(otwarte ? {} : { gora: tlo }) }, klasaScian: "dark bx-p" }));
+    f: { dol: tlo, przod: bok("logo", true), tyl: bok("logo", true), lewa: bok("napis", true), prawa: bok("napis", true), ...(otwarte ? {} : { gora: tlo }) },
+    klasaScian: "dark bx-p" }));
   if (otwarte) {
     // talia w środku, wystaje trochę ponad brzeg
     const ile = Math.round((spod.H - 4) / 0.3);
     out.push(`<div class="m-o" style="transform:translate3d(${x}mm, ${y}mm, 1mm) rotateZ(${rz}deg)">${taliaBryla(0, 0, 0, 0, ile, przodPytania(probki()[5]))}</div>`);
   } else {
-    out.push(bryla({ x, y, z: spod.H - wieczko.H + 0.6, w: wieczko.W, l: wieczko.L, h: wieczko.H, rz, cls: "m-box",
-      f: { gora: gornaPokrywa(), przod: tlo, tyl: tlo, lewa: tlo, prawa: tlo }, klasaScian: "dark bx-p" }));
+    out.push(wieczkoBryla(x, y, rz, spod.H - wieczko.H + 0.6, false));
   }
   return out.join("");
 }
 
-// Wieczko leżące obok (wierzchem do góry).
-function wieczkoBryla(x, y, rz) {
+// Wieczko (wierzchem do góry); z = wysokość dolnej krawędzi.
+function wieczkoBryla(x, y, rz, z = 0, zCieniem = true) {
   const { wieczko } = wymiaryPudelka();
-  const tlo = `<div class="m-boxbg"></div>`;
-  return cien(x, y, wieczko.W + 6, wieczko.L + 6, rz) + bryla({ x, y, w: wieczko.W, l: wieczko.L, h: wieczko.H, rz, cls: "m-box",
-    f: { gora: gornaPokrywa(), przod: tlo, tyl: tlo, lewa: tlo, prawa: tlo }, klasaScian: "dark bx-p" });
+  const bok = rodzaj => `<div class="m-boxbg m-wallbox">${bokPudelka(rodzaj)}</div>`;
+  return (zCieniem ? cien(x, y, wieczko.W + 6, wieczko.L + 6, rz) : "") + bryla({ x, y, z, w: wieczko.W, l: wieczko.L, h: wieczko.H, rz, cls: "m-box",
+    f: { gora: gornaPokrywa(), przod: bok("logo"), tyl: bok("logo"), lewa: bok("napis"), prawa: bok("napis") }, klasaScian: "dark bx-p" });
 }
 
 // Klepsydra z dwóch skrzyżowanych płaszczyzn, żeby z każdej strony wyglądała na bryłę.
@@ -131,7 +136,10 @@ function scenaStol() {
   return out.join("");
 }
 
-function htmlSceny(scena) { return scena === "stol" ? scenaStol() : scenaPudelko(); }
+function htmlSceny(scena) {
+  if (scena === "samo") return pudelkoBryla(0, 0, 0, false);
+  return scena === "stol" ? scenaStol() : scenaPudelko();
+}
 
 // Stan widoku (kamera)
 const M = { widok: WIDOKI[0], rx: WIDOKI[0].rx, rz: WIDOKI[0].rz, zoom: 1 };
@@ -140,10 +148,10 @@ function kamera() {
   const el = document.getElementById("m-world");
   if (!el) return;
   const box = el.parentElement.getBoundingClientRect();
-  const zakres = M.widok.scena === "stol" ? 430 : 230;               // mm, które mają się zmieścić
+  const zakres = { stol: 430, pudelko: 230, samo: 150 }[M.widok.scena];   // mm, które mają się zmieścić
   const s = Math.min(box.width, box.height * 1.25) / (zakres * 3.78) * M.zoom;
   const dz = M.widok.scena === "stol" ? 0 : -25;
-  el.style.transform = `translateY(${M.widok.scena === "stol" ? 4 : 6}%) scale(${s}) rotateX(${M.rx}deg) rotateZ(${M.rz}deg) translateZ(${dz}mm)`;
+  el.style.transform = `scale(${s}) rotateX(${M.rx}deg) rotateZ(${M.rz}deg) translateZ(${dz}mm)`;
 }
 
 function renderMakieta(tylkoUjecie) {

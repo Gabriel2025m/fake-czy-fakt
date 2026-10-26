@@ -29,8 +29,12 @@ function kartOdm(n) {
 // Ile kart czego jest w talii (zależy od ustawień strony).
 function sklad() {
   const pytania = wybraneKarty().length;
-  const pu = A.ust.powerupy ? POWERUPY_KARTY.length * Math.max(0, Math.min(10, +A.ust.kopiePU || 0)) : 0;
+  const pu = A.ust.powerupy ? POWERUPY_KARTY.length * kompletyPU() : 0;
   return { pytania, pu, zasady: A.ust.zasady ? 4 : 0 };
+}
+function skladTxt() {
+  const k = sklad();
+  return `Talia: ${k.pytania} ${kartOdm(k.pytania)} pytań + ${k.pu} ${kartOdm(k.pu)} power-upów${k.zasady ? ` + ${k.zasady} karty zasad` : ""}`;
 }
 
 // ── karty zasad (4 karty, przód + tył – mieszczą się w pudełku razem z talią) ──
@@ -46,9 +50,9 @@ function panelyZasad() {
     { t: "2. Poziom", b: `<p>Kropki na karcie to poziom: <b>●</b> łatwy, <b>●●</b> normalny, <b>●●●</b> trudny.</p>
         <p>Weźcie karty jednego poziomu albo je <b>zmieszajcie</b> (np. ●● z ●●● albo całą talię).</p>
         <p>Czas jest zawsze ten sam: <b>${P.sekundy} s</b>.</p>` },
-    { t: "3. Przygotowanie", b: `<p>Wymieszajcie wybrane karty pytań <b>razem z power-upami</b> i rozłóżcie w jedną luźną kupkę na środku stołu.</p>
+    { t: "3. Przygotowanie", b: `<p>Potasujcie wybrane karty pytań <b>razem z power-upami</b> (1 komplet power-upów na ok. ${PYTAN_NA_KOMPLET} pytań) i połóżcie w kupce na środku stołu.</p>
         <p>Klepsydrę postawcie obok. Zaczyna najmłodszy gracz, potem kolej idzie w lewo.</p>` },
-    { t: "4. Twoja tura", b: `<ol><li>Z <b>zamkniętymi oczami</b> wyciągnij kartę z kupki – nie z wierzchu.</li>
+    { t: "4. Twoja tura", b: `<ol><li>Zamknij oczy. Sąsiad z lewej rozkłada kupkę w wachlarz i Ci ją podaje – wyciągnij jedną kartę, nie z wierzchu.</li>
         <li>Power-up? Zatrzymaj go i losuj dalej, aż trafisz na pytanie.</li>
         <li>Odwróć klepsydrę i przeczytaj post na głos.</li>
         <li>Powiedz <b class="f">FAKE</b> albo <b class="r">PRAWDA</b>, zanim przesypie się piasek.</li>
@@ -63,9 +67,9 @@ function panelyZasad() {
   ];
 }
 
-function kartaZasad(panel, i) {
+function kartaZasad(panel, i, etykieta = `ZASADY ${i + 1}/8`) {
   return `<div class="card rule ${styl()}">
-    <div class="c-top">${logoMini()}<span class="c-nr">ZASADY ${i + 1}/8</span></div>
+    <div class="c-top">${logoMini()}<span class="c-nr">${etykieta}</span></div>
     <div class="rule-panel">
       <div class="rule-t">${panel.t}</div>
       <div class="rule-b fit" data-max="8.6" data-min="6">${panel.b}</div>
@@ -76,7 +80,7 @@ function kartaZasad(panel, i) {
 
 // Pary [przód, tył] kart zasad do talii.
 function kartyZasad() {
-  const p = panelyZasad().map(kartaZasad);
+  const p = panelyZasad().map((panel, i) => kartaZasad(panel, i));
   return [[p[0], p[1]], [p[2], p[3]], [p[4], p[5]], [p[6], p[7]]];
 }
 
@@ -95,7 +99,7 @@ function instrukcjaStrona1() {
     <section><h3>Cel gry</h3>
       <p>Każda karta pytania to post z sieci. Rozpoznaj, czy to <b class="f">FAKE</b> (dezinformacja, mit, manipulacja), czy <b class="r">PRAWDA</b>. Za każdą dobrą odpowiedź zatrzymujesz kartę. Wygrywa gracz, który na koniec ma najwięcej kart. Gra nie potrzebuje prowadzącego: grają tylko gracze.</p></section>
     <section><h3>Zawartość</h3>
-      <p>${k.pytania} ${kartOdm(k.pytania)} pytań (z przodu post, z tyłu odpowiedź i wyjaśnienie), ${k.pu} ${kartOdm(k.pu)} power-upów i ${k.zasady} karty zasad. Potrzebna jest też klepsydra ${P.sekundy}-sekundowa albo stoper w telefonie.</p></section>
+      <p>${k.pytania} ${kartOdm(k.pytania)} pytań (z przodu post, z tyłu odpowiedź i wyjaśnienie), ${k.pu} ${kartOdm(k.pu)} power-upów (${POWERUPY_KARTY.length} rodzajów), ${k.zasady} karty zasad i składana ulotka z zasadami. Potrzebna jest też klepsydra ${P.sekundy}-sekundowa albo stoper w telefonie.</p></section>
     <section><h3>1. Długość gry</h3>
       <p>W jednej rundzie każdy gracz losuje i odpowiada raz.</p>
       <table class="i-tab"><tr><th>Gra</th><th>Rund</th></tr>
@@ -107,11 +111,11 @@ function instrukcjaStrona1() {
         ${P.poziomy.map(l => `<tr><td>${kropkiTxt(l.kropki)}</td><td>${l.label}</td></tr>`).join("")}</table>
       <p>Przed grą wybierzcie karty jednego poziomu albo je <b>zmieszajcie</b>: np. ●● z ●●●, a dla młodszych graczy ● z ●●. Można też grać całą talią. Czas na odpowiedź jest zawsze taki sam: <b>${P.sekundy} sekund</b>.</p></section>
     <section><h3>3. Przygotowanie</h3>
-      <ul><li>Wymieszajcie wybrane karty pytań <b>razem z kartami power-upów</b>.</li>
-      <li>Rozłóżcie je w jedną luźną kupkę na środku stołu.</li>
+      <ul><li>Potasujcie wybrane karty pytań <b>razem z kartami power-upów</b> i połóżcie je w kupce na środku stołu.</li>
+      <li>Power-upów ma być mniej więcej <b>1 komplet</b> (po 1 karcie z każdego z ${POWERUPY_KARTY.length} rodzajów) <b>na ${PYTAN_NA_KOMPLET} kart pytań</b>. Gracie całą talią? Weźcie wszystkie. Gracie np. tylko kartami ●● (ok. 50)? Weźcie 1 komplet.</li>
       <li>Postawcie obok klepsydrę. Zaczyna najmłodszy gracz, potem kolej przechodzi w lewo.</li></ul></section>
     <section><h3>4. Twoja tura</h3>
-      <ol><li>Z <b>zamkniętymi oczami</b> wyciągnij jedną kartę z dowolnego miejsca w kupce. Nie wolno brać karty z wierzchu.</li>
+      <ol><li><b>Zamknij oczy.</b> Sąsiad z lewej bierze kupkę ze stołu, rozkłada ją w wachlarz i podaje Ci. Wyciągnij jedną kartę z dowolnego miejsca – nie wolno brać karty z wierzchu. Sąsiad odkłada kupkę na stół.</li>
       <li>Jeśli to <b>power-up</b>, zatrzymaj go i losuj dalej, aż trafisz na kartę pytania.</li>
       <li>Odwróć klepsydrę i przeczytaj post na głos.</li>
       <li>Powiedz <b class="f">FAKE</b> albo <b class="r">PRAWDA</b>, zanim przesypie się piasek.</li>
@@ -121,7 +125,7 @@ function instrukcjaStrona1() {
       <li><b>Zła odpowiedź albo brak odpowiedzi w czasie:</b> karta idzie na stos odrzuconych.</li></ul>
       <p>Nie zapisujecie wyników: wystarczy policzyć karty.</p></section>
     <section><h3>6. Power-upy</h3>
-      <p>Power-upy są wmieszane w kupkę, więc trafiają się przy losowaniu. Trzymasz je w ręce, tak żeby inni ich nie widzieli.</p>
+      <p>Power-upy są wmieszane w kupkę, więc trafiają się przy losowaniu (średnio co 6–7 losowanie). Trzymasz je w ręce, tak żeby inni ich nie widzieli.</p>
       <p><b>Zagrywanie:</b> w swojej turze, po przeczytaniu posta, a przed odpowiedzią; możesz zagrać power-up wylosowany w tej samej turze. <b>Pomoc</b> działa od razu na Twoje pytanie. <b>Atak</b> działa w najbliższej turze wskazanego gracza. <b>Tarczę</b> zagrywasz w dowolnej chwili, gdy ktoś Cię atakuje. Zagrane karty idą na stos odrzuconych.</p></section>
     <section><h3>7. Koniec gry</h3>
       <p>Gra kończy się po ostatniej rundzie. Każdy liczy swoje karty pytań, a każdy niewykorzystany power-up dolicza jako <b>+1</b>. Wygrywa gracz z największą liczbą punktów. Przy remisie dogrywka: remisujący losują po kolei, aż ktoś się pomyli.</p></section>
@@ -134,7 +138,7 @@ function instrukcjaStrona2() {
   const pu = POWERUPY_KARTY.map(k => POWERUPY[k]);
   const wiersz = d => `<tr><td class="ic">${d.ikona}</td><td><b>${esc(d.nazwa)}</b></td><td>${esc(d.opisKarty)}</td></tr>`;
   const kroki = [
-    ["🙈", "Losuj", "z zamkniętymi oczami, nie z wierzchu"],
+    ["🙈", "Losuj", "oczy zamknięte, sąsiad podaje wachlarz"],
     ["⚡", "Power-up?", "zatrzymaj i losuj dalej"],
     ["⏳", "Klepsydra", `${GRA_KARCIANA.sekundy} sekund`],
     ["🗣️", "FAKE czy PRAWDA?", "odpowiedz na głos"],
@@ -148,7 +152,7 @@ function instrukcjaStrona2() {
   <section><h3>Tura w skrócie</h3>
     <div class="i-kroki">${kroki.map(([ic, t, d], i) => `<div class="i-krok"><span class="ic">${ic}</span><b>${i + 1}. ${t}</b><small>${d}</small></div>`).join("")}</div></section>
   <section class="i-makieta"><h3>Tak wygląda gra</h3>
-    <div class="i-foto"><img src="makieta/stol.png" alt="Rozgrywka na stole"><img src="makieta/pudelko.png" alt="Pudełko z grą"></div></section>
+    <div class="i-foto"><img src="makieta/stol.png" alt="Rozgrywka na stole"><img src="makieta/samo.png" alt="Pudełko z grą"></div></section>
   <footer class="i-foot">${PODPIS}</footer>
   </div>`;
 }
@@ -215,23 +219,35 @@ function arkuszPudelka(tytul, opis, d, ozdoby) {
 
 function pudelkoArkusze() {
   const { ile, spod, wieczko } = wymiaryPudelka();
-  // Ścianki obu części są bez napisów – tylko tło w kolorach gry.
-  const boki = { n: "", s: "", w: "", e: "" };
   const wieczkoOzdoby = {
     srodek: gornaPokrywa(),
-    ...boki, rot: { n: 180, s: 0, w: 90, e: -90 },
+    n: bokPudelka("logo"), s: bokPudelka("logo"), w: bokPudelka("napis"), e: bokPudelka("napis"),
+    rot: { n: 180, s: 0, w: 90, e: -90 },
   };
+  // Spód: z boków widać tylko dolną część (resztę zasłania wieczko), więc napisy są przy dnie.
   const spodOzdoby = {
     srodek: `<div class="bx-bottom"><div class="bx-name"><span class="f">FAKE</span> <span class="czy">czy</span> <span class="r">FAKT?</span></div>
-        <p>W pudełku: ${ile} ${kartOdm(ile)} (pytania, power-upy i karty zasad).</p>
+        <p>W pudełku: ${ile} ${kartOdm(ile)} (pytania, power-upy i karty zasad) oraz ulotka z zasadami.</p>
         <p>Gra edukacyjna o krytycznym myśleniu i odporności na dezinformację. Wersja online: gra.g-mal.com.pl</p>
         <div class="bx-credit">${PODPIS}</div></div>`,
-    ...boki, rot: { n: 0, s: 180, w: -90, e: 90 },
+    n: bokPudelka("logo", true), s: bokPudelka("logo", true), w: bokPudelka("napis", true), e: bokPudelka("napis", true),
+    rot: { n: 0, s: 180, w: -90, e: 90 },
   };
   return [
     arkuszPudelka("Pudełko – wieczko", "wytnij, zegnij do środka i sklej zakładki", wieczko, wieczkoOzdoby),
     arkuszPudelka("Pudełko – spód", "wytnij, zegnij i sklej; drukuj na papierze 250–300 g/m²", spod, spodOzdoby),
   ];
+}
+
+// Bok pudełka: krótkie boki (z zakładkami) – logo, długie – pełny napis i podpis twórców.
+// spod: napis tylko w dolnej części, która wystaje spod wieczka.
+function bokPudelka(rodzaj, spod = false) {
+  const { spod: d, wieczko } = wymiaryPudelka();
+  const widac = d.H - wieczko.H;
+  const tresc = rodzaj === "logo"
+    ? `<div class="bx-logo sm"><span class="i-fak">FAK</span><span class="i-frac"><i class="e">E</i><b>czy</b><i class="t">T</i></span></div>`
+    : `<div class="bx-name"><span class="f">FAKE</span> <span class="czy">czy</span> <span class="r">FAKT?</span></div><div class="bx-credit">${PODPIS}</div>`;
+  return `<div class="bx-wall ${spod ? "low" : ""}" ${spod ? `style="height:${widac}mm"` : ""}>${tresc}</div>`;
 }
 
 // Wierzch wieczka (też na makiecie 3D).
@@ -245,6 +261,54 @@ function gornaPokrywa() {
     </div>`;
 }
 
+// ── składana ulotka: 3 × 3 pola wielkości karty na jednej kartce A4 ──
+// Po złożeniu w harmonijkę (najpierw pionowe linie, potem poziome) ma rozmiar karty
+// i mieści się w pudełku. Okładka jest w lewym górnym rogu, więc po złożeniu ląduje na wierzchu.
+function panelyUlotki() {
+  const z = panelyZasad();
+  const pu = typ => `<ul class="u-pu">${POWERUPY_KARTY.map(k => POWERUPY[k]).filter(d => d.typ === typ)
+    .map(d => `<li><b>${d.ikona} ${esc(d.nazwa)}</b> ${esc(d.opisKarty)}</li>`).join("")}</ul>`;
+  return [
+    z[1], z[2], z[3], z[4], z[5],
+    { t: "Power-upy: pomoc", b: pu("pomoc") },
+    { t: "Power-upy: ataki", b: pu("atak") },
+    { t: "Zagrywanie i koniec", b: `<p>Power-upy z kupki trzymasz w ręce. Zagrywasz je w swojej turze, po przeczytaniu posta, a przed odpowiedzią. Pomoc działa od razu, atak w następnej turze wybranego gracza, tarcza w każdej chwili.</p>
+        <p><b>Koniec:</b> liczycie karty pytań, +1 za każdy niewykorzystany power-up. Remis? Dogrywka.</p>` },
+  ];
+}
+
+function okladkaUlotki() {
+  return `<div class="card rule u-cover ${styl()}">
+    <div class="bx-top">
+      <div class="bx-logo"><span class="i-fak">FAK</span><span class="i-frac"><i class="e">E</i><b>czy</b><i class="t">T</i></span></div>
+      <div class="bx-name"><span class="f">FAKE</span> <span class="czy">czy</span> <span class="r">FAKT?</span></div>
+      <div class="bx-tag">Zasady gry karcianej</div>
+      <div class="bx-meta">${metaGry()}</div>
+      <div class="u-open">Rozłóż ulotkę →</div>
+      <div class="bx-credit">${PODPIS}</div>
+    </div>
+  </div>`;
+}
+
+function ulotkaArkusz() {
+  const r = ROZMIARY[A.ust.rozmiar];
+  const kol = 3, wier = 3, W = kol * r.w, H = wier * r.h;
+  const x0 = (PAPIER.w - W) / 2, y0 = (PAPIER.h - H) / 2 + 4;
+  const pola = [okladkaUlotki(), ...panelyUlotki().map((p, i) => kartaZasad(p, i, `${i + 2}/9`))];
+  const cells = pola.map((html, i) => `<div class="cell" style="left:${x0 + (i % kol) * r.w}mm;top:${y0 + Math.floor(i / kol) * r.h}mm;width:${r.w}mm;height:${r.h}mm">${html}</div>`).join("");
+  const linie = [
+    ...Array.from({ length: kol - 1 }, (_, i) => `<line x1="${(i + 1) * r.w}" y1="0" x2="${(i + 1) * r.w}" y2="${H}" class="fold"/>`),
+    ...Array.from({ length: wier - 1 }, (_, i) => `<line x1="0" y1="${(i + 1) * r.h}" x2="${W}" y2="${(i + 1) * r.h}" class="fold"/>`),
+  ].join("");
+  return `<div class="sheet a4 box ulotka">
+    <div class="bx-head"><b>Ulotka z zasadami</b> · wytnij po linii ciągłej, zegnij harmonijkę najpierw po liniach pionowych, potem po poziomych – okładka zostaje na wierzchu, a całość ma rozmiar karty</div>
+    ${cells}
+    <svg class="bx-lines" viewBox="0 0 ${W} ${H}" style="left:${x0}mm;top:${y0}mm;width:${W}mm;height:${H}mm">
+      <rect x="0" y="0" width="${W}" height="${H}" class="cut"/>${linie}</svg>
+    <div class="bx-legend"><span class="lg-cut"></span> cięcie <span class="lg-fold"></span> zgięcie</div>
+  </div>`;
+}
+
 function dodatkiArkusze() {
-  return [...pudelkoArkusze(), instrukcjaStrona1(), instrukcjaStrona2()].join("");
+  return [...pudelkoArkusze(), instrukcjaStrona1(), instrukcjaStrona2(), ulotkaArkusz()].join("");
 }

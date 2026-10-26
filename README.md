@@ -45,21 +45,21 @@ Wersja karciana jest pod adresem `/admin.html` (z gry nie ma do niej linku). Mo�
 - wydrukować na A4: strony idą na przemian PRZÓD / TYŁ, a tył jest ułożony lustrzanie, żeby przy druku dwustronnym trafił dokładnie za przód (obracanie przez długą lub krótką krawędź). Drukować w skali 100%.
 - skalibrować drukarkę stroną testową (krzyżyki) i przesunięciem tyłu w milimetrach,
 - wyeksportować poprawki (JSON) albo gotowy `questions.js` do gry,
-- dołączyć 4 karty zasad (przód + tył) i w zakładce „Pudełko i instrukcja” wydrukować pudełko (wieczko i spód; rozmiar liczy się z liczby kart i ich grubości) oraz instrukcję na 2 strony A4 (`dodatki.js`).
+- dołączyć 4 karty zasad (przód + tył) i w zakładce „Pudełko i instrukcja” wydrukować pudełko (wieczko i spód; rozmiar liczy się z liczby kart i ich grubości) oraz instrukcję na 2 strony A4 oraz składaną ulotkę z zasadami (3 × 3 pola wielkości karty, po złożeniu mieści się w pudełku) (`dodatki.js`).
 
-Gotowe PDF-y z domyślnymi ustawieniami są w folderze `pdf/` i mają link na stronie głównej gry. Po zmianie kart wygeneruj je ponownie (np. Chrome headless z `admin.html?druk=karty` i `admin.html?druk=dodatki`).
+Gotowe PDF-y z domyślnymi ustawieniami są w folderze `pdf/` i do pobrania z `admin.html` (na stronie gry nie ma do nich linku). Po zmianie kart wygeneruj je ponownie (np. Chrome headless z `admin.html?druk=karty` i `admin.html?druk=dodatki`).
 
 ## Wersja karciana (offline) – zasady w skrócie
 Bez prowadzącego, grają tylko gracze (2–8, 15–30 min). Potrzebna klepsydra 15 s albo stoper.
-- **Przygotowanie**: wybrane karty pytań miesza się z power-upami w jedną luźną kupkę.
-- **Tura**: gracz z zamkniętymi oczami wyciąga kartę z dowolnego miejsca kupki (nie z wierzchu). Power-up zatrzymuje i losuje dalej, aż trafi na pytanie. Odwraca klepsydrę, czyta post i w 15 s mówi FAKE albo PRAWDA, potem odwraca kartę.
+- **Przygotowanie**: wybrane karty pytań tasuje się z power-upami w jedną kupkę na stole. Power-upów jest 1 komplet (po 1 z 8 rodzajów) na ok. 50 pytań – przy całej talii 3 komplety, czyli 24 karty (`kompletyPU` w `admin.js`, ustawienie „Automatycznie”).
+- **Tura**: gracz zamyka oczy, sąsiad z lewej rozkłada kupkę w wachlarz i mu ją podaje, a gracz wyciąga jedną kartę (nie z wierzchu). Power-up zatrzymuje i losuje dalej, aż trafi na pytanie. Odwraca klepsydrę, czyta post i w 15 s mówi FAKE albo PRAWDA, potem odwraca kartę.
 - **Punkty**: dobra odpowiedź = gracz zatrzymuje kartę (1 punkt); zła albo po czasie = karta na stos odrzuconych. Nie ma tabeli wyników – liczy się karty.
 - **Długość**: szybka 6, normalna 10, długa 14 rund (albo do końca pytań). **Poziom**: kropki na karcie (● ●● ●●●) – gra się jednym poziomem albo mieszanką; czas zawsze 15 s.
 - **Power-upy** (4 pomoce i 4 ataki – tylko te, które działają bez aplikacji, `POWERUPY_KARTY` w `powerups.js`): zagrywa się je w swojej turze przed odpowiedzią; atak działa w następnej turze wskazanego gracza, tarczę można zagrać w każdej chwili.
 - **Koniec**: liczy się karty pytań + 1 za każdy niewykorzystany power-up; remis rozstrzyga dogrywka.
 
 ## Makieta 3D
-Zakładka „Makieta 3D” w `admin.html` (`makieta.js`) pokazuje pudełko i rozgrywkę z kilku perspektyw (można obracać myszką). Gotowe zrzuty są w folderze `makieta/` (`admin.html?druk=3d&widok=stol` daje jedno ujęcie na cały ekran); dwa z nich są w instrukcji.
+Zakładka „Makieta 3D” w `admin.html` (`makieta.js`) pokazuje samo pudełko, pudełko z kartami i rozgrywkę z kilku perspektyw (można obracać myszką). Gotowe zrzuty są w folderze `makieta/` (`admin.html?druk=3d&widok=stol` daje jedno ujęcie na cały ekran); dwa z nich są w instrukcji.
 
 ## Publikacja (GitHub Pages)
 Wrzuć `index.html`, `style.css`, `app.js`, `powerups.js`, `questions.js`, `admin.html`, `admin.css`, `admin.js`, `dodatki.js`, `makieta.js` oraz foldery `img/`, `pdf/` i `makieta/` do repozytorium, a potem Settings → Pages → Deploy from branch (main, katalog główny).

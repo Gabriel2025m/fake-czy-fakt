@@ -923,7 +923,6 @@ function viewHome() {
       <li><b>Szybciej = więcej punktów.</b> Dobra odpowiedź to ${PUNKTY_ZA_DOBRA} pkt + do ${MAX_BONUS_ZA_CZAS} pkt bonusu za czas.</li>
       <li><b>Lupa kosztuje.</b> Sprawdzenie źródła zabiera ${Math.round(KARA_ZA_ZRODLO * 100)}% punktów za pytanie.</li>
     </ul>
-    <p class="print-links">🃏 Wersja do druku: <a href="pdf/fake-czy-fakt-karty.pdf" download>karty (PDF)</a> · <a href="pdf/fake-czy-fakt-pudelko-instrukcja.pdf" download>pudełko i instrukcja (PDF)</a></p>
   </section>`;
 }
 
