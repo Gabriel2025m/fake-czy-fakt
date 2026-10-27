@@ -130,7 +130,7 @@ function instrukcjaStrona1() {
     <section><h3>7. Koniec gry</h3>
       <p>Gra kończy się po ostatniej rundzie. Każdy liczy swoje karty pytań, a każdy niewykorzystany power-up dolicza jako <b>+1</b>. Wygrywa gracz z największą liczbą punktów. Przy remisie dogrywka: remisujący losują po kolei, aż ktoś się pomyli.</p></section>
   </div>
-  <footer class="i-foot">Wersja online tej gry: <b>gra.g-mal.com.pl</b></footer>
+  <footer class="i-foot">Wersja online tej gry: <b>fake-czy-fakt-unseen.pl</b></footer>
   </div>`;
 }
 
@@ -228,7 +228,7 @@ function pudelkoArkusze() {
   const spodOzdoby = {
     srodek: `<div class="bx-bottom"><div class="bx-name"><span class="f">FAKE</span> <span class="czy">czy</span> <span class="r">FAKT?</span></div>
         <p>W pudełku: ${ile} ${kartOdm(ile)} (pytania, power-upy i karty zasad) oraz ulotka z zasadami.</p>
-        <p>Gra edukacyjna o krytycznym myśleniu i odporności na dezinformację. Wersja online: gra.g-mal.com.pl</p>
+        <p>Gra edukacyjna o krytycznym myśleniu i odporności na dezinformację. Wersja online: fake-czy-fakt-unseen.pl</p>
         <div class="bx-credit">${PODPIS}</div></div>`,
     n: bokPudelka("logo", true), s: bokPudelka("logo", true), w: bokPudelka("napis", true), e: bokPudelka("napis", true),
     rot: { n: 0, s: 180, w: -90, e: 90 },
