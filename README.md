@@ -56,7 +56,7 @@ Bez prowadzącego, grają tylko gracze (2–8, 15–30 min). Potrzebna klepsydra
 - **Punkty**: dobra odpowiedź = gracz zatrzymuje kartę (1 punkt); zła albo po czasie = karta na stos odrzuconych. Nie ma tabeli wyników – liczy się karty.
 - **Długość**: szybka 6, normalna 10, długa 14 rund (albo do końca pytań). **Poziom**: kropki na karcie (● ●● ●●●) – gra się jednym poziomem albo mieszanką; czas zawsze 15 s.
 - **Power-upy** (4 pomoce i 4 ataki – tylko te, które działają bez aplikacji, `POWERUPY_KARTY` w `powerups.js`): zagrywa się je w swojej turze przed odpowiedzią; atak działa w następnej turze wskazanego gracza, tarczę można zagrać w każdej chwili.
-- **Koniec**: liczy się karty pytań + 1 za każdy niewykorzystany power-up; remis rozstrzyga dogrywka.
+- **Koniec**: liczy się karty pytań + 0,5 pkt za każdy niewykorzystany power-up; remis rozstrzyga dogrywka.
 
 ## Makieta 3D
 Zakładka „Makieta 3D” w `admin.html` (`makieta.js`) pokazuje samo pudełko, pudełko z kartami i rozgrywkę z kilku perspektyw (można obracać myszką). Gotowe zrzuty są w folderze `makieta/` (`admin.html?druk=3d&widok=stol` daje jedno ujęcie na cały ekran); dwa z nich są w instrukcji.

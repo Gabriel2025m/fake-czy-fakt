@@ -62,7 +62,7 @@ function panelyZasad() {
         <p>Nie ma tabeli wyników: punkty to karty pytań, które leżą przed Tobą.</p>` },
     { t: "6. Power-upy", b: `<p>Power-upy wylosowane z kupki trzymasz w ręce, tak żeby inni ich nie widzieli.</p>
         <p>Zagrywasz je w swojej turze, po przeczytaniu posta, a przed odpowiedzią. <b>Pomoc</b> działa od razu, <b>atak</b> w następnej turze wybranego gracza. <b>Tarczę</b> zagrywasz, gdy ktoś Cię atakuje.</p>` },
-    { t: "7. Koniec gry", b: `<p>Po ostatniej rundzie każdy liczy swoje karty pytań. Każdy niewykorzystany power-up to <b>+1</b>.</p>
+    { t: "7. Koniec gry", b: `<p>Po ostatniej rundzie każdy liczy swoje karty pytań. Każdy niewykorzystany power-up to <b>+0,5 pkt</b>.</p>
         <p>Wygrywa gracz z największą liczbą punktów. Remis? Dogrywka: remisujący losują po kolei, aż ktoś się pomyli.</p>` },
   ];
 }
@@ -128,7 +128,7 @@ function instrukcjaStrona1() {
       <p>Power-upy są wmieszane w kupkę, więc trafiają się przy losowaniu (średnio co 6–7 losowanie). Trzymasz je w ręce, tak żeby inni ich nie widzieli.</p>
       <p><b>Zagrywanie:</b> w swojej turze, po przeczytaniu posta, a przed odpowiedzią; możesz zagrać power-up wylosowany w tej samej turze. <b>Pomoc</b> działa od razu na Twoje pytanie. <b>Atak</b> działa w najbliższej turze wskazanego gracza. <b>Tarczę</b> zagrywasz w dowolnej chwili, gdy ktoś Cię atakuje. Zagrane karty idą na stos odrzuconych.</p></section>
     <section><h3>7. Koniec gry</h3>
-      <p>Gra kończy się po ostatniej rundzie. Każdy liczy swoje karty pytań, a każdy niewykorzystany power-up dolicza jako <b>+1</b>. Wygrywa gracz z największą liczbą punktów. Przy remisie dogrywka: remisujący losują po kolei, aż ktoś się pomyli.</p></section>
+      <p>Gra kończy się po ostatniej rundzie. Każdy liczy swoje karty pytań, a każdy niewykorzystany power-up dolicza jako <b>+0,5 pkt</b>. Wygrywa gracz z największą liczbą punktów. Przy remisie dogrywka: remisujący losują po kolei, aż ktoś się pomyli.</p></section>
   </div>
   <footer class="i-foot">Wersja online tej gry: <b>fake-czy-fakt-unseen.pl</b></footer>
   </div>`;
@@ -273,7 +273,7 @@ function panelyUlotki() {
     { t: "Power-upy: pomoc", b: pu("pomoc") },
     { t: "Power-upy: ataki", b: pu("atak") },
     { t: "Zagrywanie i koniec", b: `<p>Power-upy z kupki trzymasz w ręce. Zagrywasz je w swojej turze, po przeczytaniu posta, a przed odpowiedzią. Pomoc działa od razu, atak w następnej turze wybranego gracza, tarcza w każdej chwili.</p>
-        <p><b>Koniec:</b> liczycie karty pytań, +1 za każdy niewykorzystany power-up. Remis? Dogrywka.</p>` },
+        <p><b>Koniec:</b> liczycie karty pytań, +0,5 pkt za każdy niewykorzystany power-up. Remis? Dogrywka.</p>` },
   ];
 }
 
