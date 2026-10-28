@@ -586,7 +586,7 @@ function withDeadline(view) {
   return view;
 }
 
-// ═════════════ Tryb online (PeerJS) ═════════════
+// ═════════════ Tryb online (serwer pokoi, polaczenia.js) ═════════════
 function createRoom() {
   const name = S.myName.trim();
   if (!name) { toast("Wpisz swoje imię"); return; }

@@ -4,7 +4,7 @@ Gra edukacyjna o cyberbezpieczeństwie: gracz czyta post z sieci i decyduje, czy
 
 ## Tryby
 - **Spotkanie**: jedno urządzenie, wpisujecie imiona. Gracze odpowiadają po kolei, każdy na swoje pytanie (ekran „Teraz kolej: Ola”, czas rusza po kliknięciu). Runda kończy się, gdy każdy odpowie raz, potem jest podsumowanie rundy z przyciskami „Kolejna runda” i „Opuść”.
-- **Online**: każdy u siebie. Jedna osoba tworzy pokój i dostaje 5-znakowy kod (albo link), reszta dołącza kodem. Połączenie idzie bezpośrednio między przeglądarkami (PeerJS / WebRTC), więc nie potrzeba własnego serwera.
+- **Online**: każdy u siebie. Jedna osoba tworzy pokój i dostaje 5-znakowy kod (albo link), reszta dołącza kodem. Połączenie idzie przez lekki serwer pokoi na Cloudflare (`wss://pokoje.g-mal.com.pl`, klient w `polaczenia.js`), więc działa też w sieciach szkolnych blokujących WebRTC i nie ma limitów publicznego serwera PeerJS.
 
 ## Źródło
 Pod postem jest przycisk „🔍 Sprawdź źródło”. Jeśli gracz go użyje, za dobrą odpowiedź dostaje o 25% mniej punktów (`KARA_ZA_ZRODLO` w `app.js`). Po odpowiedzi źródło pokazuje się wszystkim.
