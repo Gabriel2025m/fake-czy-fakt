@@ -642,6 +642,15 @@ if (DRUK) {
 przelacznikJezyka(document.getElementById("lang"));
 document.addEventListener("jezyk", render);
 render();
+// ?druk=…&strona=N – tylko jedna strona w skali 1:1 (do zrzutu w 300 dpi: PDF z płaskich obrazów,
+// bo półprzezroczyste poświaty w PDF z Chrome część programów rysuje jako czarne paski).
+const JEDNA = DRUK ? +new URLSearchParams(location.search).get("strona") || 0 : 0;
+function zostawJednaStrone() {
+  if (!JEDNA) return;
+  document.body.classList.add("jedna-strona");
+  document.querySelectorAll(".sheets .sheet").forEach((sh, i) => { if (i !== JEDNA - 1) sh.remove(); });
+}
+zostawJednaStrone();
 document.fonts.ready.then(() => {
   if (A.tab === "preview") dopasujTeksty(document.getElementById("sheets"));
   if (A.tab === "extras") dopasujTeksty(document.getElementById("extras"));
