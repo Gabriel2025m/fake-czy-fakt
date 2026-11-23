@@ -104,7 +104,10 @@ function instrukcjaStrona1() {
     <section><h3>${t("Cel gry")}</h3>
       <p>${t('Każda karta pytania to post z sieci. Rozpoznaj, czy to <b class="f">FAKE</b> (dezinformacja, mit, manipulacja), czy <b class="r">PRAWDA</b>. Za każdą dobrą odpowiedź zatrzymujesz kartę. Wygrywa gracz, który na koniec ma najwięcej kart. Gra nie potrzebuje prowadzącego: grają tylko gracze.')}</p></section>
     <section><h3>${t("Zawartość")}</h3>
-      <p>${t("{0} {1} pytań (z przodu post, z tyłu odpowiedź i wyjaśnienie), {2} {3} power-upów ({4} rodzajów), {5} karty zasad i składana ulotka z zasadami. Potrzebna jest też klepsydra {6}-sekundowa albo stoper w telefonie.", k.pytania, kartOdm(k.pytania), k.pu, kartOdm(k.pu), POWERUPY_KARTY.length, k.zasady, P.sekundy)}</p></section>
+      <p>${t(k.zasady
+        ? "{0} {1} pytań (z przodu post, z tyłu odpowiedź i wyjaśnienie), {2} {3} power-upów ({4} rodzajów), {5} karty zasad i składana ulotka z zasadami. Potrzebna jest też klepsydra {6}-sekundowa albo stoper w telefonie."
+        : "{0} {1} pytań (z przodu post, z tyłu odpowiedź i wyjaśnienie), {2} {3} power-upów ({4} rodzajów) i składana ulotka z zasadami. Potrzebna jest też klepsydra {6}-sekundowa albo stoper w telefonie.",
+        k.pytania, kartOdm(k.pytania), k.pu, kartOdm(k.pu), POWERUPY_KARTY.length, k.zasady, P.sekundy)}</p></section>
     <section><h3>${t("1. Długość gry")}</h3>
       <p>${t("W jednej rundzie każdy gracz losuje i odpowiada raz.")}</p>
       <table class="i-tab"><tr><th>${t("Gra")}</th><th>${t("Rund")}</th></tr>
@@ -232,7 +235,7 @@ function pudelkoArkusze() {
   // Spód: z boków widać tylko dolną część (resztę zasłania wieczko), więc napisy są przy dnie.
   const spodOzdoby = {
     srodek: `<div class="bx-bottom"><div class="bx-name">${nazwaGry()}</div>
-        <p>${t("W pudełku: {0} {1} (pytania, power-upy i karty zasad) oraz ulotka z zasadami.", ile, kartOdm(ile))}</p>
+        <p>${t(A.ust.zasady ? "W pudełku: {0} {1} (pytania, power-upy i karty zasad) oraz ulotka z zasadami." : "W pudełku: {0} {1} (pytania i power-upy) oraz ulotka z zasadami.", ile, kartOdm(ile))}</p>
         <p>${t("Gra edukacyjna o krytycznym myśleniu i odporności na dezinformację. Wersja online: fake-czy-fakt-unseen.pl")}</p>
         <div class="bx-credit">${PODPIS}</div></div>`,
     n: bokPudelka("logo", true), s: bokPudelka("logo", true), w: bokPudelka("napis", true), e: bokPudelka("napis", true),

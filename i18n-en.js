@@ -327,3 +327,9 @@ Object.assign(SLOWNIK.en, {
   "Pobierz do druku": "Download to print",
   "Karty, pudełko i instrukcja wersji karcianej – PDF w 3 językach.": "Cards, box and instructions for the card game – PDF in 3 languages.",
 });
+
+// ── talia bez kart zasad (domyślnie) ──
+Object.assign(SLOWNIK.en, {
+  "{0} {1} pytań (z przodu post, z tyłu odpowiedź i wyjaśnienie), {2} {3} power-upów ({4} rodzajów) i składana ulotka z zasadami. Potrzebna jest też klepsydra {6}-sekundowa albo stoper w telefonie.": "{0} question cards (the post on the front, the answer and explanation on the back), {2} power-up cards ({4} kinds) and a folding rules leaflet. You also need a {6}-second sand timer or a phone stopwatch.",
+  "W pudełku: {0} {1} (pytania i power-upy) oraz ulotka z zasadami.": "In the box: {0} cards (questions and power-ups) and a rules leaflet.",
+});

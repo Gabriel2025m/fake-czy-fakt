@@ -327,3 +327,9 @@ Object.assign(SLOWNIK.de, {
   "Pobierz do druku": "Zum Drucken herunterladen",
   "Karty, pudełko i instrukcja wersji karcianej – PDF w 3 językach.": "Karten, Schachtel und Anleitung des Kartenspiels – PDF in 3 Sprachen.",
 });
+
+// ── talia bez kart zasad (domyślnie) ──
+Object.assign(SLOWNIK.de, {
+  "{0} {1} pytań (z przodu post, z tyłu odpowiedź i wyjaśnienie), {2} {3} power-upów ({4} rodzajów) i składana ulotka z zasadami. Potrzebna jest też klepsydra {6}-sekundowa albo stoper w telefonie.": "{0} Fragekarten (vorne der Post, hinten Antwort und Erklärung), {2} Power-up-Karten ({4} Arten) und ein Faltblatt mit den Regeln. Außerdem braucht ihr eine {6}-Sekunden-Sanduhr oder die Stoppuhr im Handy.",
+  "W pudełku: {0} {1} (pytania i power-upy) oraz ulotka z zasadami.": "In der Schachtel: {0} Karten (Fragen und Power-ups) und ein Regel-Faltblatt.",
+});

@@ -47,7 +47,7 @@ Wersja karciana jest pod adresem `/admin.html` (z gry nie ma do niej linku). Mo�
 - wyeksportować poprawki (JSON) albo gotowy `questions.js` do gry,
 - dołączyć 4 karty zasad (przód + tył) i w zakładce „Pudełko i instrukcja” wydrukować pudełko (wieczko i spód; rozmiar liczy się z liczby kart i ich grubości) oraz instrukcję na 2 strony A4 oraz składaną ulotkę z zasadami (3 × 3 pola wielkości karty, po złożeniu mieści się w pudełku) (`dodatki.js`).
 
-Gotowe PDF-y z domyślnymi ustawieniami są w folderze `pdf/` po polsku, angielsku (`-en`) i niemiecku (`-de`) i do pobrania z `admin.html` w języku wybranym przełącznikiem (na stronie gry nie ma do nich linku). Po zmianie kart wygeneruj je ponownie (np. Chrome headless z `admin.html?druk=karty&lang=en` i `admin.html?druk=dodatki&lang=en`; bez `lang` – po polsku).
+Gotowe PDF-y z domyślnymi ustawieniami (bez kart zasad – zasady są w ulotce) są w folderze `pdf/`: karty (38 stron) oraz pudełko z ulotką (3 strony: wieczko, spód, ulotka – bez instrukcji A4, którą można wydrukować z zakładki „Pudełko i instrukcja”). Są po polsku, angielsku (`-en`) i niemiecku (`-de`) i do pobrania z `admin.html` w języku wybranym przełącznikiem (na stronie gry nie ma do nich linku). Po zmianie kart wygeneruj je ponownie (np. Chrome headless z `admin.html?druk=karty&lang=en` i `admin.html?druk=dodatki&lang=en`; bez `lang` – po polsku).
 
 ## Języki (PL / EN / DE)
 

@@ -20,7 +20,7 @@ const POLA = ["poziom", "prawda", "autor", "handle", "tekst", "obrazek", "zrodlo
 const DOMYSLNE = {
   styl: "gra", rozmiar: "poker", odwracanie: "dluga", przesX: 0, przesY: 0, odstep: 0,
   znaczniki: true, ramka: true, zdjecia: true, tyly: true,
-  powerupy: true, kompletyPU: "auto", zasady: true, grubosc: 0.3,
+  powerupy: true, kompletyPU: "auto", zasady: false, grubosc: 0.3,   // zasady są w ulotce, karty zasad – opcjonalnie
 };
 
 const A = {
