@@ -66,7 +66,8 @@ function pobierzPlik(nazwa, tresc, typ) {
 
 // Wszystkie karty z poprawkami (bez usuniętych).
 function karty() {
-  const baza = PYTANIA.map(q => ({ ...q, ...(A.poprawki[q.nr] || {}) }));
+  // Karty po angielsku/niemiecku: tłumaczenie z pytania-*.js przykrywa tekst (także poprawiony po polsku).
+  const baza = PYTANIA.map(q => tq({ ...q, ...(A.poprawki[q.nr] || {}) }));
   const wlasne = Object.entries(A.poprawki).filter(([nr, p]) => p.wlasna).map(([nr, p]) => ({ nr, ...p }));
   return [...baza, ...wlasne].filter(k => !k.usunieta);
 }
@@ -87,14 +88,14 @@ function wybraneKarty() { return karty().filter(k => czyWybrana(k.nr)); }
 // ═════════════ Projekty kart ═════════════
 // Na przodzie kart pełny napis zamiast logo (logo zostaje na tyłach).
 function tytulKarty() {
-  return `<span class="c-title"><span class="f">FAKE</span> <span class="czy">czy</span> <span class="t">FAKT?</span></span>`;
+  return `<span class="c-title">${nazwaGry("t")}</span>`;
 }
 function logoMini() {
   return `<span class="c-logo">FAK<span class="c-frac"><i class="e">E</i><b></b><i class="t">T</i></span></span>`;
 }
 function kropki(poziom) {
   const n = { latwy: 1, normalny: 2, trudny: 3 }[poziom] || 1;
-  return `<span class="c-lvl" title="${POZIOMY[poziom] || ""}">${[1, 2, 3].map(i => `<i class="${i <= n ? "on" : ""}"></i>`).join("")}</span>`;
+  return `<span class="c-lvl" title="${t(POZIOMY[poziom] || "")}">${[1, 2, 3].map(i => `<i class="${i <= n ? "on" : ""}"></i>`).join("")}</span>`;
 }
 
 const PODPIS = `by <b>UNSEEN</b> · ZSTiO Jarosław`;
@@ -112,33 +113,33 @@ function przodPytania(k) {
       <div class="c-text fit" data-max="12.5" data-min="7">${esc(k.tekst)}</div>
       ${img ? `<div class="c-img"><img src="${esc(imgSrc(k.obrazek))}" alt=""></div>` : ""}
     </div>
-    <div class="c-ask"><span class="f">FAKE</span><span class="czy">czy</span><span class="r">PRAWDA</span></div>
-    <div class="c-foot">${kropki(k.poziom)}<span>${POZIOMY[k.poziom] || ""}</span><span class="c-credit">${PODPIS}</span></div>
+    <div class="c-ask"><span class="f">FAKE</span><span class="czy">${t("czy")}</span><span class="r">${t("PRAWDA")}</span></div>
+    <div class="c-foot">${kropki(k.poziom)}<span>${t(POZIOMY[k.poziom] || "")}</span><span class="c-credit">${PODPIS}</span></div>
   </div>`;
 }
 
 function tylPytania(k) {
-  const zrodlo = domena(k.link) || (k.zrodlo || "").replace(/^Zweryfikuj:\s*/, "");
+  const zrodlo = domena(k.link) || (k.zrodlo || "").replace(/^(Zweryfikuj|Verify|Prüfe):\s*/, "");
   return `<div class="card q-back ${styl()} ${k.prawda ? "real" : "fake"}">
     <div class="c-top">${logoMini()}</div>
-    <div class="b-stamp">${k.prawda ? "PRAWDA" : "FAKE"}</div>
+    <div class="b-stamp">${k.prawda ? t("PRAWDA") : "FAKE"}</div>
     <div class="b-panel">
-      <div class="b-text fit" data-max="9.5" data-min="5.5"><b>Dlaczego?</b> ${esc(k.wyjasnienie)}</div>
-      ${zrodlo ? `<div class="b-src">Źródło: ${esc(zrodlo)}</div>` : ""}
+      <div class="b-text fit" data-max="9.5" data-min="5.5"><b>${t("Dlaczego?")}</b> ${esc(k.wyjasnienie)}</div>
+      ${zrodlo ? `<div class="b-src">${t("Źródło:")} ${esc(zrodlo)}</div>` : ""}
     </div>
     <div class="c-foot"><span class="c-credit">${PODPIS}</span></div>
   </div>`;
 }
 
 function przodPU(key) {
-  const d = POWERUPY[key];
+  const d = tpu(key);
   return `<div class="card pu-front ${styl()} ${d.typ}">
     <div class="c-top">${tytulKarty()}<span class="c-nr">POWER-UP</span></div>
     <div class="pu-panel">
       <div class="pu-ico">${d.ikona}</div>
       <div class="pu-nm">${esc(d.nazwa)}</div>
       <div class="pu-ds fit" data-max="10" data-min="6.5">${esc(d.opisKarty)}</div>
-      <div class="pu-tp">${d.typ === "atak" ? "Atak na innego gracza" : "Pomoc dla Ciebie"}</div>
+      <div class="pu-tp">${t(d.typ === "atak" ? "Atak na innego gracza" : "Pomoc dla Ciebie")}</div>
     </div>
     <div class="c-foot"><span class="c-credit">${PODPIS}</span></div>
   </div>`;
@@ -196,7 +197,7 @@ function arkusz(komorki, s, tyl, nrStrony, wszystkie) {
     `<div class="cell" style="left:${s.x0 + c * (s.w + s.g)}mm; top:${s.y0 + r * (s.h + s.g)}mm; width:${s.w}mm; height:${s.h}mm">${html}</div>`).join("");
   return `<div class="sheet ${A.ust.ramka ? "outline" : ""}" data-label="Strona ${nrStrony} · ${tyl ? "TYŁ" : "PRZÓD"}">
     <div class="sheet-in" style="${off}">${cells}${A.ust.znaczniki ? znaczniki(s) : ""}</div>
-    <div class="sheet-foot" style="left:${s.x0 + 3}mm">Strona ${nrStrony} / ${wszystkie} · ${tyl ? "TYŁ" : "PRZÓD"}</div>
+    <div class="sheet-foot" style="left:${s.x0 + 3}mm">${t("Strona {0} / {1}", nrStrony, wszystkie)} · ${t(tyl ? "TYŁ" : "PRZÓD")}</div>
   </div>`;
   // Stopka stoi pod pierwszą kolumną kart, między znacznikami cięcia, więc nigdy na nie nie wchodzi.
 }
@@ -297,8 +298,8 @@ function renderSide() {
     <label class="fld inline">Grubość karty (mm)<input type="number" min="0.15" max="1" step="0.05" data-u="grubosc" value="${u.grubosc}"></label>
     <p class="hint">Od grubości zależy wysokość pudełka. Zwykły papier 250–300 g/m² ma ok. 0,3 mm.</p>
     <div class="btns col">
-      <a class="btn" href="pdf/fake-czy-fakt-karty.pdf" download>Pobierz PDF: karty</a>
-      <a class="btn" href="pdf/fake-czy-fakt-pudelko-instrukcja.pdf" download>Pobierz PDF: pudełko i instrukcja</a>
+      <a class="btn" href="pdf/fake-czy-fakt-karty${LANG === "pl" ? "" : "-" + LANG}.pdf" download>Pobierz PDF: karty (${LANG.toUpperCase()})</a>
+      <a class="btn" href="pdf/fake-czy-fakt-pudelko-instrukcja${LANG === "pl" ? "" : "-" + LANG}.pdf" download>Pobierz PDF: pudełko i instrukcja (${LANG.toUpperCase()})</a>
     </div>
     <p class="hint">Gotowe pliki PDF mają ustawienia domyślne i oryginalne karty. Żeby wydrukować własne poprawki, użyj przycisku „Drukuj” i wybierz „Zapisz jako PDF”.</p>
     <h2>Dane</h2>
@@ -624,6 +625,8 @@ if (DRUK) {
   if (DRUK === "3d") ustawWidokStartowy(new URLSearchParams(location.search).get("widok"));
 }
 
+przelacznikJezyka(document.getElementById("lang"));
+document.addEventListener("jezyk", render);
 render();
 document.fonts.ready.then(() => {
   if (A.tab === "preview") dopasujTeksty(document.getElementById("sheets"));

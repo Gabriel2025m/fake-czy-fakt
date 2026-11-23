@@ -44,7 +44,12 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .tabs { display: flex; gap: 6px; margin-left: 12px; }
 .tabs button { background: transparent; border: 1px solid var(--edge); border-radius: 999px; padding: 6px 14px; cursor: pointer; font-weight: 600; }
 .tabs button.on { background: var(--accent); color: #241a00; border-color: var(--accent); }
-.back { margin-left: auto; color: var(--muted); text-decoration: none; font-weight: 600; }
+.back { color: var(--muted); text-decoration: none; font-weight: 600; }
+/* przełącznik języka kart i dodatków (i18n.js) */
+.lang-switch { margin-left: auto; display: flex; gap: 2px; padding: 3px; border-radius: 999px; border: 1px solid var(--edge); background: var(--panel); }
+.lang-btn { background: none; border: 0; border-radius: 999px; padding: 5px 10px; cursor: pointer; font-weight: 700; font-size: 12px; letter-spacing: .04em; color: var(--muted); }
+.lang-btn:hover { color: var(--text); background: var(--panel-2); }
+.lang-btn.on { background: var(--accent); color: #241a00; }
 .back:hover { color: var(--text); }
 
 .layout { display: grid; grid-template-columns: 300px 1fr; gap: 20px; padding: 20px; align-items: start; }

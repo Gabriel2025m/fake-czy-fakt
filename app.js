@@ -278,7 +278,7 @@ class Gra {
         if (t && t.double) { points *= 2; notes.push("💎 ×2"); }
       } else if (t && t.lifeline) {
         points = 50;
-        notes.push("🛟 koło ratunkowe");
+        notes.push(["🛟 koło ratunkowe"]);
       }
       if (t && t.haracz && points > 0) {
         const thief = this.player(t.haracz);
@@ -286,7 +286,7 @@ class Gra {
           const cut = Math.floor(points / 2);
           points -= cut;
           thief.score += cut;
-          notes.push(`💸 ${cut} pkt dla ${thief.name}`);
+          notes.push(["💸 {0} pkt dla {1}", cut, thief.name]);
         }
       }
       p.score += points;
@@ -323,20 +323,20 @@ class Gra {
 
     p.inv.splice(idx, 1);
     t.used.push(key);
-    let msg = `${def.ikona} ${def.nazwa}!`;
+    let msg = ["{0}!", "pu:" + key];
 
     if (def.typ === "atak") {
       if (target.shield) {
         target.shield = false;
-        msg = `🛡️ Tarcza gracza ${target.name} zablokowała atak!`;
+        msg = ["🛡️ Tarcza gracza {0} zablokowała atak!", target.name];
       } else if (key === "kradziez") {
         const amt = Math.min(50, target.score);
         target.score -= amt;
         p.score += amt;
-        msg = `🧲 ${p.name} zabiera ${amt} pkt graczowi ${target.name}!`;
+        msg = ["🧲 {0} zabiera {1} pkt graczowi {2}!", p.name, amt, target.name];
       } else {
         target.effects.push({ key, from: pid });
-        msg = `${def.ikona} ${def.nazwa} czeka na gracza ${target.name}.`;
+        msg = ["{0} czeka na gracza {1}.", "pu:" + key, target.name];
       }
     } else if (key === "zrodlo") {
       t.freeSource = true;
@@ -475,7 +475,7 @@ class Gra {
       nextRound: this.round + 1,
       goldenRounds: this.goldenRounds.slice(),
       question: q && (this.phase === "question" || showAnswer) ? {
-        autor: q.autor || "", handle: q.handle || "", tekst: q.tekst, zrodlo: q.zrodlo, obrazek: q.obrazek || "",
+        nr: q.nr || "", autor: q.autor || "", handle: q.handle || "", tekst: q.tekst, zrodlo: q.zrodlo, obrazek: q.obrazek || "",
         ...(showAnswer ? { prawda: q.prawda, wyjasnienie: q.wyjasnienie, link: q.link || "", obrazekZrodlo: q.obrazekZrodlo || "" } : {}),
       } : null,
       players: this.players.map(p => ({
@@ -544,11 +544,11 @@ function roomLink(code) {
   return `${location.origin}${location.pathname}?pokoj=${code}`;
 }
 async function copy(text) {
-  try { await navigator.clipboard.writeText(text); toast("Skopiowano!"); }
+  try { await navigator.clipboard.writeText(text); toast(t("Skopiowano!")); }
   catch {
     const ta = document.createElement("textarea");
     ta.value = text; document.body.appendChild(ta); ta.select();
-    try { document.execCommand("copy"); toast("Skopiowano!"); } catch { toast(text); }
+    try { document.execCommand("copy"); toast(t("Skopiowano!")); } catch { toast(text); }
     ta.remove();
   }
 }
@@ -565,7 +565,7 @@ function imgSrc(name) {
 // ═════════════ Tryb lokalny (spotkanie) ═════════════
 function startLocal() {
   const names = S.localNames.map(n => n.trim()).filter(Boolean);
-  if (names.length < 1) { toast("Wpisz przynajmniej jedno imię"); return; }
+  if (names.length < 1) { toast(t("Wpisz przynajmniej jedno imię")); return; }
   leaveAll();
   S.mode = "local";
   S.game = new Gra(() => {
@@ -589,8 +589,8 @@ function withDeadline(view) {
 // ═════════════ Tryb online (serwer pokoi, polaczenia.js) ═════════════
 function createRoom() {
   const name = S.myName.trim();
-  if (!name) { toast("Wpisz swoje imię"); return; }
-  if (!window.Peer) { toast("Brak połączenia z serwerem gry. Sprawdź internet."); return; }
+  if (!name) { toast(t("Wpisz swoje imię")); return; }
+  if (!window.Peer) { toast(t("Brak połączenia z serwerem gry. Sprawdź internet.")); return; }
   save("fcf-name", name);
   leaveAll();
   S.screen = "connecting";
@@ -625,7 +625,7 @@ function createRoom() {
   peer.on("error", err => {
     if (err.type === "unavailable-id" && S.screen === "connecting") { createRoom(); return; }
     console.warn(err);
-    if (S.mode !== "host") { toast("Nie udało się utworzyć pokoju. Spróbuj ponownie."); goHome(); }
+    if (S.mode !== "host") { toast(t("Nie udało się utworzyć pokoju. Spróbuj ponownie.")); goHome(); }
   });
 
   peer.on("disconnected", () => { if (S.peer === peer && !peer.destroyed) peer.reconnect(); });
@@ -677,9 +677,9 @@ function broadcast() {
 function joinRoom() {
   const name = S.myName.trim();
   const code = S.joinCode.trim().toUpperCase().replace(/[^A-Z0-9]/g, "");
-  if (!name) { toast("Wpisz swoje imię"); return; }
-  if (code.length !== 5) { toast("Kod pokoju ma 5 znaków"); return; }
-  if (!window.Peer) { toast("Brak połączenia z serwerem gry. Sprawdź internet."); return; }
+  if (!name) { toast(t("Wpisz swoje imię")); return; }
+  if (code.length !== 5) { toast(t("Kod pokoju ma 5 znaków")); return; }
+  if (!window.Peer) { toast(t("Brak połączenia z serwerem gry. Sprawdź internet.")); return; }
   save("fcf-name", name);
   leaveAll();
   S.screen = "connecting";
@@ -697,7 +697,7 @@ function joinRoom() {
     render();
   };
 
-  const timeout = setTimeout(() => { if (!joined) fail("Nie udało się połączyć z pokojem."); }, 15000);
+  const timeout = setTimeout(() => { if (!joined) fail(t("Nie udało się połączyć z pokojem.")); }, 15000);
 
   peer.on("open", id => {
     const conn = peer.connect(PREFIKS_POKOJU + code, { reliable: true });
@@ -720,22 +720,22 @@ function joinRoom() {
         if (S.view.phase === "lobby" || S.view.phase === "summary") S.myChoice = null;
         render();
       } else if (msg.t === "reject") {
-        fail(msg.reason || "Nie można dołączyć.");
+        fail(t(msg.reason || "Nie można dołączyć."));
       } else if (msg.t === "toast") {
-        toast(String(msg.msg || ""));
+        toast(tm(msg.msg));
       } else if (msg.t === "closed") {
-        toast("Host zakończył grę.");
+        toast(t("Host zakończył grę."));
         goHome();
       }
     });
-    const lost = () => { if (S.mode === "guest" && S.hostConn === conn) { toast("Utracono połączenie z hostem."); goHome(); } };
+    const lost = () => { if (S.mode === "guest" && S.hostConn === conn) { toast(t("Utracono połączenie z hostem.")); goHome(); } };
     conn.on("close", lost);
     conn.on("iceStateChanged", st => { if (st === "failed" || st === "closed") lost(); });
   });
 
   peer.on("error", err => {
-    if (err.type === "peer-unavailable") fail("Nie ma pokoju o kodzie " + code + ".");
-    else if (!joined) fail("Błąd połączenia. Spróbuj ponownie.");
+    if (err.type === "peer-unavailable") fail(t("Nie ma pokoju o kodzie {0}.", code));
+    else if (!joined) fail(t("Błąd połączenia. Spróbuj ponownie."));
     else console.warn(err);
   });
 }
@@ -778,7 +778,7 @@ function usePowerup(key, target) {
     return;
   }
   const pid = S.mode === "host" ? "host" : S.game.currentPlayer.id;
-  toast(S.game.usePowerup(pid, key, target).msg);
+  toast(tm(S.game.usePowerup(pid, key, target).msg));
 }
 
 // ═════════════ Akcje (kliknięcia) ═════════════
@@ -894,8 +894,8 @@ function render() {
 const PODPIS = `by <b>UNSEEN</b> · ZSTiO Jarosław`;
 
 function logo(small) {
-  const mark = `<div class="logo ${small ? "logo-small" : ""}" ${small ? 'data-a="leave" role="button" title="Wyjdź do menu"' : ""} aria-label="Fake czy fakt?">
-    <span class="logo-fak" aria-hidden="true">FAK</span><span class="logo-frac" aria-hidden="true"><span class="frac-top">E</span><span class="frac-bar">czy</span><span class="frac-bot">T</span></span>
+  const mark = `<div class="logo ${small ? "logo-small" : ""}" ${small ? `data-a="leave" role="button" title="${t("Wyjdź do menu")}"` : ""} aria-label="${t("Fake czy fakt?")}">
+    <span class="logo-fak" aria-hidden="true">FAK</span><span class="logo-frac" aria-hidden="true"><span class="frac-top">E</span><span class="frac-bar">${t("czy")}</span><span class="frac-bot">T</span></span>
   </div>`;
   // małe logo (na wszystkich ekranach poza główną) ma podpis twórców pod spodem
   return small ? `<div class="brandbox">${mark}<div class="credit sm">${PODPIS}</div></div>` : mark;
@@ -906,22 +906,22 @@ function viewHome() {
   <section class="screen home">
     ${logo()}
     <div class="credit">${PODPIS}</div>
-    <p class="lead">Gra o cyberbezpieczeństwie. Czytasz post z sieci i decydujesz: <b class="t-fake">dezinformacja</b> czy <b class="t-real">prawdziwa informacja</b>? Bez logowania.</p>
+    <p class="lead">${t('Gra o cyberbezpieczeństwie. Czytasz post z sieci i decydujesz: <b class="t-fake">dezinformacja</b> czy <b class="t-real">prawdziwa informacja</b>? Bez logowania.')}</p>
     <div class="mode-grid">
       <button class="mode-card" data-a="go-local">
         <span class="mode-icon" aria-hidden="true">👥</span>
-        <span class="mode-title">Spotkanie</span>
-        <span class="mode-desc">Jedno urządzenie, wszyscy w jednym miejscu. Gracze odpowiadają po kolei, są power-upy.</span>
+        <span class="mode-title">${t("Spotkanie")}</span>
+        <span class="mode-desc">${t("Jedno urządzenie, wszyscy w jednym miejscu. Gracze odpowiadają po kolei, są power-upy.")}</span>
       </button>
       <button class="mode-card" data-a="go-online">
         <span class="mode-icon" aria-hidden="true">🌐</span>
         <span class="mode-title">Online</span>
-        <span class="mode-desc">Każdy u siebie, np. podczas rozmowy na Messengerze czy Discordzie. Łączycie się kodem pokoju.</span>
+        <span class="mode-desc">${t("Każdy u siebie, np. podczas rozmowy na Messengerze czy Discordzie. Łączycie się kodem pokoju.")}</span>
       </button>
     </div>
     <ul class="howto">
-      <li><b>Szybciej = więcej punktów.</b> Dobra odpowiedź to ${PUNKTY_ZA_DOBRA} pkt + do ${MAX_BONUS_ZA_CZAS} pkt bonusu za czas.</li>
-      <li><b>Lupa kosztuje.</b> Sprawdzenie źródła zabiera ${Math.round(KARA_ZA_ZRODLO * 100)}% punktów za pytanie.</li>
+      <li>${t("<b>Szybciej = więcej punktów.</b> Dobra odpowiedź to {0} pkt + do {1} pkt bonusu za czas.", PUNKTY_ZA_DOBRA, MAX_BONUS_ZA_CZAS)}</li>
+      <li>${t("<b>Lupa kosztuje.</b> Sprawdzenie źródła zabiera {0}% punktów za pytanie.", Math.round(KARA_ZA_ZRODLO * 100))}</li>
     </ul>
   </section>`;
 }
@@ -931,7 +931,7 @@ function seg(settings, key, opts, fmt, editable) {
     <div class="seg ${Object.keys(opts).length === 2 ? "seg-2" : ""}" role="group">
       ${Object.entries(opts).map(([val, o]) => `
         <button class="seg-btn ${String(settings[key] === true ? "1" : settings[key] === false ? "0" : settings[key]) === val ? "on" : ""}" ${editable ? `data-a="set" data-key="${key}" data-val="${val}"` : "disabled"}>
-          <span class="seg-main">${o.label}</span><span class="seg-sub">${fmt(o)}</span>
+          <span class="seg-main">${t(o.label)}</span><span class="seg-sub">${fmt(o)}</span>
         </button>`).join("")}
     </div>`;
 }
@@ -939,34 +939,36 @@ function seg(settings, key, opts, fmt, editable) {
 function settingsBlock(settings, editable, turns) {
   return `
     <div class="field">
-      <div class="field-label">Długość gry</div>
-      ${seg(settings, "dlugosc", DLUGOSC, o => `${o.pytania} ${turns ? "rund" : "pytań"}`, editable)}
-      ${turns ? `<p class="muted small hint">W każdej rundzie gracze odpowiadają po kolei – każdy na swoje pytanie.</p>` : ""}
+      <div class="field-label">${t("Długość gry")}</div>
+      ${seg(settings, "dlugosc", DLUGOSC, o => t(turns ? "{0} rund" : "{0} pytań", o.pytania), editable)}
+      ${turns ? `<p class="muted small hint">${t("W każdej rundzie gracze odpowiadają po kolei – każdy na swoje pytanie.")}</p>` : ""}
     </div>
     <div class="field">
-      <div class="field-label">Poziom trudności</div>
-      ${seg(settings, "poziom", POZIOM, o => `${o.sekundy} s na odpowiedź`, editable)}
+      <div class="field-label">${t("Poziom trudności")}</div>
+      ${seg(settings, "poziom", POZIOM, o => t("{0} s na odpowiedź", o.sekundy), editable)}
     </div>
     <div class="field">
       <div class="field-label">Power-upy</div>
-      ${seg(settings, "powerupy", { 1: { label: "Włączone", sub: turns ? "złote i losowa runda" : "złote i losowe pytanie" }, 0: { label: "Wyłączone", sub: "sama wiedza" } }, o => o.sub, editable)}
+      ${seg(settings, "powerupy", { 1: { label: "Włączone", sub: turns ? "złote i losowa runda" : "złote i losowe pytanie" }, 0: { label: "Wyłączone", sub: "sama wiedza" } }, o => t(o.sub), editable)}
       ${settings.powerupy ? powerupList(turns) : ""}
     </div>`;
 }
 
 function powerupList(turns) {
-  const R = turns ? { a: "Złote rundy", b: "Na koniec złotej rundy gracz, który zdobył w niej", c: "Losowa runda", d: "w swojej turze" }
-                  : { a: "Złote pytania", b: "Po złotym pytaniu gracz, który zdobył w nim", c: "Losowe pytanie", d: "podczas pytania, na swoim urządzeniu" };
-  const card = ([k, d]) => `<li class="pu-info pu-${d.typ}"><span class="pu-icon">${d.ikona}</span><span><b>${d.nazwa}</b><br><span class="muted">${d.opis}</span></span></li>`;
+  const R = turns ? { a: t("Złote rundy"), b: t("Na koniec złotej rundy gracz, który zdobył w niej najwięcej punktów, wybiera 1 z 3 losowych power-upów."), c: t("Losowa runda"),
+                    d: t("Power-upy zbierają się na dole ekranu i można ich użyć w swojej turze. Ataki działają na wybranego gracza w jego następnej turze. Każdy niewykorzystany power-up daje +{0} pkt na koniec gry.", PUNKTY_ZA_POWERUP) }
+                  : { a: t("Złote pytania"), b: t("Po złotym pytaniu gracz, który zdobył w nim najwięcej punktów, wybiera 1 z 3 losowych power-upów."), c: t("Losowe pytanie"),
+                    d: t("Power-upy zbierają się na dole ekranu i można ich użyć podczas pytania, na swoim urządzeniu. Ataki działają na wybranego gracza w jego następnej odpowiedzi. Każdy niewykorzystany power-up daje +{0} pkt na koniec gry.", PUNKTY_ZA_POWERUP) };
+  const card = ([k]) => { const d = tpu(k); return `<li class="pu-info pu-${d.typ}"><span class="pu-icon">${d.ikona}</span><span><b>${d.nazwa}</b><br><span class="muted">${d.opis}</span></span></li>`; };
   const all = Object.entries(POWERUPY);
   return `<details class="pu-details">
-    <summary>Zobacz wszystkie 12 power-upów</summary>
-    <p class="muted small"><b>✨ ${R.a}</b> – ${Object.entries(ZLOTE_RUNDY).map(([k, r]) => `${DLUGOSC[k].label.toLowerCase()}: ${r.join(", ")}`).join("; ")}. ${R.b} najwięcej punktów, wybiera 1 z 3 losowych power-upów.</p>
-    <p class="muted small"><b>🎲 ${R.c}</b> – raz na grę, w losowym momencie, każdy gracz dostaje losowy power-up.</p>
-    <p class="muted small">Power-upy zbierają się na dole ekranu i można ich użyć ${R.d}. Ataki działają na wybranego gracza w jego następnej ${turns ? "turze" : "odpowiedzi"}. Każdy niewykorzystany power-up daje +${PUNKTY_ZA_POWERUP} pkt na koniec gry.</p>
-    <h3 class="pu-h">Pomoc dla Ciebie</h3>
+    <summary>${t("Zobacz wszystkie 12 power-upów")}</summary>
+    <p class="muted small"><b>✨ ${R.a}</b> – ${Object.entries(ZLOTE_RUNDY).map(([k, r]) => `${t(DLUGOSC[k].label).toLowerCase()}: ${r.join(", ")}`).join("; ")}. ${R.b}</p>
+    <p class="muted small"><b>🎲 ${R.c}</b> – ${t("raz na grę, w losowym momencie, każdy gracz dostaje losowy power-up.")}</p>
+    <p class="muted small">${R.d}</p>
+    <h3 class="pu-h">${t("Pomoc dla Ciebie")}</h3>
     <ul class="pu-infos">${all.filter(([, d]) => d.typ === "pomoc").map(card).join("")}</ul>
-    <h3 class="pu-h">Ataki na innych</h3>
+    <h3 class="pu-h">${t("Ataki na innych")}</h3>
     <ul class="pu-infos">${all.filter(([, d]) => d.typ === "atak").map(card).join("")}</ul>
   </details>`;
 }
@@ -975,24 +977,24 @@ function viewLocalSetup() {
   const rows = S.localNames.map((n, i) => `
     <div class="name-row">
       <span class="name-num">${i + 1}</span>
-      <input class="input" data-name-idx="${i}" value="${esc(n)}" placeholder="Imię gracza" maxlength="20" autocomplete="off">
-      <button class="icon-btn" data-a="remove-player" data-idx="${i}" aria-label="Usuń gracza">✕</button>
+      <input class="input" data-name-idx="${i}" value="${esc(n)}" placeholder="${t("Imię gracza")}" maxlength="20" autocomplete="off">
+      <button class="icon-btn" data-a="remove-player" data-idx="${i}" aria-label="${t("Usuń gracza")}">✕</button>
     </div>`).join("");
   return `
   <section class="screen panel">
     ${logo(true)}
-    <h1 class="h1">Spotkanie</h1>
+    <h1 class="h1">${t("Spotkanie")}</h1>
     <div class="scroll">
     <div class="field">
-      <div class="field-label">Gracze <span class="muted">(${S.localNames.length}/${MAX_GRACZY_LOKALNIE})</span></div>
+      <div class="field-label">${t("Gracze")} <span class="muted">(${S.localNames.length}/${MAX_GRACZY_LOKALNIE})</span></div>
       <div class="names">${rows}</div>
-      ${S.localNames.length < MAX_GRACZY_LOKALNIE ? `<button class="btn btn-ghost btn-small" data-a="add-player">+ Dodaj gracza</button>` : ""}
+      ${S.localNames.length < MAX_GRACZY_LOKALNIE ? `<button class="btn btn-ghost btn-small" data-a="add-player">+ ${t("Dodaj gracza")}</button>` : ""}
     </div>
     ${settingsBlock(S.localSettings, true, true)}
     </div>
     <div class="actions">
-      <button class="btn btn-ghost" data-a="home">← Wróć</button>
-      <button class="btn btn-primary" data-a="start-local">Start ▶</button>
+      <button class="btn btn-ghost" data-a="home">← ${t("Wróć")}</button>
+      <button class="btn btn-primary" data-a="start-local">${t("Start")} ▶</button>
     </div>
   </section>`;
 }
@@ -1004,29 +1006,29 @@ function viewOnlineMenu() {
     <h1 class="h1">Online</h1>
     <div class="scroll">
     <div class="field">
-      <label class="field-label" for="my-name">Twoje imię</label>
-      <input class="input" id="my-name" value="${esc(S.myName)}" placeholder="np. Ola" maxlength="20" autocomplete="off">
+      <label class="field-label" for="my-name">${t("Twoje imię")}</label>
+      <input class="input" id="my-name" value="${esc(S.myName)}" placeholder="${t("np. Ola")}" maxlength="20" autocomplete="off">
     </div>
     <div class="online-grid">
       <div class="online-box">
-        <h2 class="h2">Utwórz pokój</h2>
-        <p class="muted">Dostaniesz kod do wysłania znajomym. Ty wybierasz ustawienia i startujesz grę.</p>
-        <button class="btn btn-primary" data-a="create-room">Utwórz pokój</button>
+        <h2 class="h2">${t("Utwórz pokój")}</h2>
+        <p class="muted">${t("Dostaniesz kod do wysłania znajomym. Ty wybierasz ustawienia i startujesz grę.")}</p>
+        <button class="btn btn-primary" data-a="create-room">${t("Utwórz pokój")}</button>
       </div>
       <div class="online-box">
-        <h2 class="h2">Dołącz do pokoju</h2>
-        <input class="input input-code" id="join-code" value="${esc(S.joinCode)}" placeholder="KOD" maxlength="5" autocomplete="off" spellcheck="false" aria-label="Kod pokoju">
-        <button class="btn btn-real" data-a="join-room">Dołącz</button>
+        <h2 class="h2">${t("Dołącz do pokoju")}</h2>
+        <input class="input input-code" id="join-code" value="${esc(S.joinCode)}" placeholder="${t("KOD")}" maxlength="5" autocomplete="off" spellcheck="false" aria-label="${t("Kod pokoju")}">
+        <button class="btn btn-real" data-a="join-room">${t("Dołącz")}</button>
       </div>
     </div>
     </div>
-    <div class="actions"><button class="btn btn-ghost" data-a="home">← Wróć</button></div>
+    <div class="actions"><button class="btn btn-ghost" data-a="home">← ${t("Wróć")}</button></div>
   </section>`;
 }
 
 function viewConnecting() {
-  return `<section class="screen panel center">${logo(true)}<div class="spinner"></div><p class="muted">Łączenie…</p>
-    <button class="btn btn-ghost" data-a="home">Anuluj</button></section>`;
+  return `<section class="screen panel center">${logo(true)}<div class="spinner"></div><p class="muted">${t("Łączenie…")}</p>
+    <button class="btn btn-ghost" data-a="home">${t("Anuluj")}</button></section>`;
 }
 
 function viewRoom() {
@@ -1043,31 +1045,31 @@ function isController() { return S.mode === "local" || S.mode === "host"; }
 function viewLobby(v) {
   const host = S.mode === "host";
   const players = v.players.map(p => `
-    <li class="chip ${p.id === S.myId ? "me" : ""}"><span class="dot" style="background:${avatarColor(p.name)}"></span>${esc(p.name)}${p.id === "host" ? ' <span class="tag">host</span>' : ""}</li>`).join("");
+    <li class="chip ${p.id === S.myId ? "me" : ""}"><span class="dot" style="background:${avatarColor(p.name)}"></span>${esc(p.name)}${p.id === "host" ? ` <span class="tag">${t("host")}</span>` : ""}</li>`).join("");
   return `
   <section class="screen panel">
     ${logo(true)}
     <div class="scroll">
     <div class="room-code-box">
-      <div class="field-label">Kod pokoju</div>
+      <div class="field-label">${t("Kod pokoju")}</div>
       <div class="room-code">${esc(S.roomCode)}</div>
       <div class="row-btns">
-        <button class="btn btn-ghost btn-small" data-a="copy-code">Kopiuj kod</button>
-        <button class="btn btn-ghost btn-small" data-a="copy-link">Kopiuj link</button>
+        <button class="btn btn-ghost btn-small" data-a="copy-code">${t("Kopiuj kod")}</button>
+        <button class="btn btn-ghost btn-small" data-a="copy-link">${t("Kopiuj link")}</button>
       </div>
-      ${host ? `<p class="muted small">Wyślij kod lub link znajomym na Messengerze / Discordzie.</p>` : ""}
+      ${host ? `<p class="muted small">${t("Wyślij kod lub link znajomym na Messengerze / Discordzie.")}</p>` : ""}
     </div>
     <div class="field">
-      <div class="field-label">Gracze w pokoju <span class="muted">(${v.players.length})</span></div>
+      <div class="field-label">${t("Gracze w pokoju")} <span class="muted">(${v.players.length})</span></div>
       <ul class="chips">${players}</ul>
     </div>
     ${settingsBlock(v.settings, host, false)}
     </div>
     <div class="actions">
-      <button class="btn btn-ghost" data-a="leave">Opuść</button>
+      <button class="btn btn-ghost" data-a="leave">${t("Opuść")}</button>
       ${host
-        ? `<button class="btn btn-primary" data-a="start-game">Rozpocznij ▶</button>`
-        : `<span class="waiting">Czekamy, aż host rozpocznie grę…</span>`}
+        ? `<button class="btn btn-primary" data-a="start-game">${t("Rozpocznij")} ▶</button>`
+        : `<span class="waiting">${t("Czekamy, aż host rozpocznie grę…")}</span>`}
     </div>
   </section>`;
 }
@@ -1077,22 +1079,17 @@ function playerName(v, id) {
 }
 
 function progressLabel(v) {
-  const special = v.golden ? `<span class="round-tag gold">✨ Złota</span>` : v.randomRound ? `<span class="round-tag lucky">🎲 Losowa</span>` : "";
+  const special = v.golden ? `<span class="round-tag gold">✨ ${t("Złota")}</span>` : v.randomRound ? `<span class="round-tag lucky">🎲 ${t("Losowa")}</span>` : "";
   return v.turns
-    ? `${special}Runda <b>${v.round}</b>/${v.rounds} · ${POZIOM[v.settings.poziom].label}`
-    : `Pytanie <b>${v.index + 1}</b>/${v.total} · ${POZIOM[v.settings.poziom].label}`;
+    ? `${special}${t("Runda")} <b>${v.round}</b>/${v.rounds} · ${t(POZIOM[v.settings.poziom].label)}`
+    : `${t("Pytanie")} <b>${v.index + 1}</b>/${v.total} · ${t(POZIOM[v.settings.poziom].label)}`;
 }
 
 function scoreChips(v) {
   return `<ul class="chips score-chips">${v.players.map(p => `
     <li class="chip ${p.id === v.currentId ? "me" : ""}"><span class="dot" style="background:${avatarColor(p.name)}"></span>${esc(p.name)} <b>${p.score}</b>${
-      v.powerupy && p.inv.length ? ` <span class="chip-pu" title="Power-upy">🎒${p.inv.length}</span>` : ""}${
-      p.shield ? ` <span title="Tarcza">🛡️</span>` : ""}</li>`).join("")}</ul>`;
-}
-
-function puLabel(k) {
-  const d = POWERUPY[k];
-  return `${d.ikona} ${d.nazwa}`;
+      v.powerupy && p.inv.length ? ` <span class="chip-pu" title="${t("Power-upy")}">🎒${p.inv.length}</span>` : ""}${
+      p.shield ? ` <span title="${t("Tarcza")}">🛡️</span>` : ""}</li>`).join("")}</ul>`;
 }
 
 // Pasek power-upów: w spotkaniu gracza, który ma turę; online – mój, na moim urządzeniu.
@@ -1104,40 +1101,40 @@ function inventoryBar(v) {
   if (S.puTarget) {
     const others = v.players.filter(p => p.id !== me.id);
     return `<div class="inventory">
-      <div class="inv-title">${puLabel(S.puTarget)} – na kogo?</div>
+      <div class="inv-title">${puLabel(S.puTarget)} – ${t("na kogo?")}</div>
       <div class="targets">${others.map(p => `
         <button class="btn btn-ghost btn-small target-btn" data-a="pu-target" data-pid="${esc(p.id)}"><span class="dot" style="background:${avatarColor(p.name)}"></span>${esc(p.name)}${p.shield ? " 🛡️" : ""}</button>`).join("")}
-        <button class="btn btn-ghost btn-small" data-a="pu-cancel">Anuluj</button>
+        <button class="btn btn-ghost btn-small" data-a="pu-cancel">${t("Anuluj")}</button>
       </div>
     </div>`;
   }
   const inQuestion = v.phase === "question";
   const cards = me.inv.map(k => {
-    const d = POWERUPY[k];
+    const d = tpu(k);
     const off = v.turn.used.includes(k) || (d.tylkoPytanie && !inQuestion) || (k === "zrodlo" && (v.turn.noSource || me.source))
              || (d.typ === "atak" && v.players.length < 2);
     return `<button class="pu pu-${d.typ}" data-a="use-pu" data-key="${k}" title="${esc(d.opis)}" ${off ? "disabled" : ""}>
       <span class="pu-icon">${d.ikona}</span><span class="pu-name">${d.nazwa}</span><span class="pu-desc">${d.opis}</span></button>`;
   }).join("");
   return `<div class="inventory">
-    <div class="inv-title">🎒 Power-upy: ${esc(me.name)}</div>
-    ${me.inv.length ? `<div class="pu-row">${cards}</div>` : `<p class="muted small inv-empty">Brak power-upów. Zdobywa się je za wygranie ${v.turns ? "złotej rundy" : "złotego pytania"} i w ${v.turns ? "losowej rundzie" : "losowym pytaniu"}.</p>`}
+    <div class="inv-title">🎒 ${t("Power-upy")}: ${esc(me.name)}</div>
+    ${me.inv.length ? `<div class="pu-row">${cards}</div>` : `<p class="muted small inv-empty">${t(v.turns ? "Brak power-upów. Zdobywa się je za wygranie złotej rundy i w losowej rundzie." : "Brak power-upów. Zdobywa się je za wygranie złotego pytania i w losowym pytaniu.")}</p>`}
   </div>`;
 }
 
 function activeTags(v) {
-  const t = v.turn;
-  if (!t) return "";
+  const tu = v.turn;
+  if (!tu) return "";
   const tags = [];
-  if (t.double) tags.push(`<span class="tag-pill good">💎 ×2</span>`);
-  if (t.lifeline) tags.push(`<span class="tag-pill good">🛟 Koło</span>`);
-  if (t.freeSource) tags.push(`<span class="tag-pill good">🔍 Darmowa lupa</span>`);
-  if (t.extraMs) tags.push(`<span class="tag-pill good">⏱️ +${t.extraMs / 1000} s</span>`);
-  if (t.haste) tags.push(`<span class="tag-pill bad">⏳ Pośpiech</span>`);
-  if (t.noSource) tags.push(`<span class="tag-pill bad">🚫 Bez lupy</span>`);
-  if (t.swapped) tags.push(`<span class="tag-pill bad">🔀 Zamiana</span>`);
-  if (t.fogRemainingMs > 0 || (t.incoming || []).includes("mgla")) tags.push(`<span class="tag-pill bad">🌫️ Mgła</span>`);
-  if (t.haracz) tags.push(`<span class="tag-pill bad">💸 Haracz</span>`);
+  if (tu.double) tags.push(`<span class="tag-pill good">💎 ×2</span>`);
+  if (tu.lifeline) tags.push(`<span class="tag-pill good">🛟 ${t("Koło")}</span>`);
+  if (tu.freeSource) tags.push(`<span class="tag-pill good">🔍 ${t("Darmowa lupa")}</span>`);
+  if (tu.extraMs) tags.push(`<span class="tag-pill good">⏱️ +${tu.extraMs / 1000} s</span>`);
+  if (tu.haste) tags.push(`<span class="tag-pill bad">⏳ ${t("Pośpiech")}</span>`);
+  if (tu.noSource) tags.push(`<span class="tag-pill bad">🚫 ${t("Bez lupy")}</span>`);
+  if (tu.swapped) tags.push(`<span class="tag-pill bad">🔀 ${t("Zamiana")}</span>`);
+  if (tu.fogRemainingMs > 0 || (tu.incoming || []).includes("mgla")) tags.push(`<span class="tag-pill bad">🌫️ ${t("Mgła")}</span>`);
+  if (tu.haracz) tags.push(`<span class="tag-pill bad">💸 ${t("Haracz")}</span>`);
   return tags.length ? `<div class="tag-row">${tags.join("")}</div>` : "";
 }
 
@@ -1148,40 +1145,40 @@ function viewReady(v) {
   <section class="screen game ${v.golden ? "golden" : ""}">
     <div class="game-top">${logo(true)}<div class="progress-label">${progressLabel(v)}</div></div>
     <div class="turn-card">
-      ${v.golden ? `<div class="gold-banner">✨ ZŁOTA RUNDA – najlepszy w tej rundzie dostanie power-up!</div>` : ""}
-      <div class="field-label">Teraz kolej</div>
+      ${v.golden ? `<div class="gold-banner">✨ ${t("ZŁOTA RUNDA – najlepszy w tej rundzie dostanie power-up!")}</div>` : ""}
+      <div class="field-label">${t("Teraz kolej")}</div>
       <div class="turn-name" style="color:${avatarColor(name)}">${esc(name)}</div>
-      ${incoming.length ? `<div class="warn">⚠️ Ktoś użył na Tobie: ${incoming.map(puLabel).join(", ")}</div>` : ""}
-      <p class="muted">Przekaż urządzenie. Czas ruszy po kliknięciu.</p>
-      <button class="btn btn-primary btn-big" data-a="begin">Pokaż pytanie ▶</button>
+      ${incoming.length ? `<div class="warn">⚠️ ${t("Ktoś użył na Tobie:")} ${incoming.map(puLabel).join(", ")}</div>` : ""}
+      <p class="muted">${t("Przekaż urządzenie. Czas ruszy po kliknięciu.")}</p>
+      <button class="btn btn-primary btn-big" data-a="begin">${t("Pokaż pytanie")} ▶</button>
     </div>
     ${activeTags(v)}
     ${inventoryBar(v)}
     ${scoreChips(v)}
-    <div class="actions"><button class="btn btn-ghost" data-a="leave">Opuść</button></div>
+    <div class="actions"><button class="btn btn-ghost" data-a="leave">${t("Opuść")}</button></div>
   </section>`;
 }
 
 function postCard(v, q) {
   const reveal = v.phase === "reveal";
   const me = v.players.find(p => p.id === meId(v));
-  const stamp = reveal ? `<div class="stamp ${q.prawda ? "stamp-real" : "stamp-fake"}">${q.prawda ? "Prawda" : "Fake"}</div>` : "";
+  const stamp = reveal ? `<div class="stamp ${q.prawda ? "stamp-real" : "stamp-fake"}">${t(q.prawda ? "Prawda" : "Fake")}</div>` : "";
 
   let source;
   if (reveal || me?.source) {
     source = `<div class="post-source"><span aria-hidden="true">🔍</span> <span>${esc(q.zrodlo)}</span></div>`;
   } else if (v.turn?.noSource) {
-    source = `<button class="post-source source-btn" disabled>🚫 Lupa zablokowana przez innego gracza</button>`;
+    source = `<button class="post-source source-btn" disabled>🚫 ${t("Lupa zablokowana przez innego gracza")}</button>`;
   } else {
     const free = v.turn?.freeSource;
     source = `<button class="post-source source-btn" data-a="source" ${!me || me.answered ? "disabled" : ""}>
-      🔍 Sprawdź źródło <span class="cost">${free ? "(za darmo)" : `(−${Math.round(KARA_ZA_ZRODLO * 100)}% punktów)`}</span></button>`;
+      🔍 ${t("Sprawdź źródło")} <span class="cost">${free ? t("(za darmo)") : t("(−{0}% punktów)", Math.round(KARA_ZA_ZRODLO * 100))}</span></button>`;
   }
 
   // Podpis zdjęcia dopiero po odpowiedzi – nazwa serwisu mogłaby zdradzić odpowiedź.
   const img = q.obrazek
     ? `<figure class="post-fig"><img class="post-img" src="${esc(imgSrc(q.obrazek))}" alt="" loading="lazy">${
-        reveal && q.obrazekZrodlo ? `<figcaption class="img-credit">Zdjęcie: ${esc(q.obrazekZrodlo)}</figcaption>` : ""}</figure>`
+        reveal && q.obrazekZrodlo ? `<figcaption class="img-credit">${t("Zdjęcie:")} ${esc(q.obrazekZrodlo)}</figcaption>` : ""}</figure>`
     : POKAZUJ_MIEJSCE_NA_ZDJECIE ? `<div class="post-img post-img-empty" aria-hidden="true"><span>🖼️</span></div>` : "";
 
   return `
@@ -1198,7 +1195,7 @@ function postCard(v, q) {
 }
 
 function viewQuestion(v) {
-  const q = v.question;
+  const q = tq(v.question);
   const reveal = v.phase === "reveal";
   const last = v.index + 1 >= v.total;
   const answeredCount = v.players.filter(p => p.answered).length;
@@ -1208,8 +1205,8 @@ function viewQuestion(v) {
     if (S.mode === "local") {
       const pid = esc(v.currentId);
       const btns = [
-        `<button class="btn btn-fake btn-big" data-a="answer-local" data-pid="${pid}" data-choice="fake">✖ Dezinformacja</button>`,
-        `<button class="btn btn-real btn-big" data-a="answer-local" data-pid="${pid}" data-choice="prawda">✔ Prawdziwa informacja</button>`,
+        `<button class="btn btn-fake btn-big" data-a="answer-local" data-pid="${pid}" data-choice="fake">✖ ${t("Dezinformacja")}</button>`,
+        `<button class="btn btn-real btn-big" data-a="answer-local" data-pid="${pid}" data-choice="prawda">✔ ${t("Prawdziwa informacja")}</button>`,
       ];
       if (v.turn?.swapped) btns.reverse();
       answerArea = `<div class="big-answers">${btns.join("")}</div>${inventoryBar(v)}`;
@@ -1217,14 +1214,14 @@ function viewQuestion(v) {
       const mine = S.mode === "host" ? S.game.answers.host?.choice : S.myChoice?.choice;
       const act = S.mode === "host" ? "answer-host" : "answer-guest";
       const btns = [
-        `<button class="btn btn-fake btn-big" data-a="${act}" data-choice="fake">✖ Dezinformacja</button>`,
-        `<button class="btn btn-real btn-big" data-a="${act}" data-choice="prawda">✔ Prawdziwa informacja</button>`,
+        `<button class="btn btn-fake btn-big" data-a="${act}" data-choice="fake">✖ ${t("Dezinformacja")}</button>`,
+        `<button class="btn btn-real btn-big" data-a="${act}" data-choice="prawda">✔ ${t("Prawdziwa informacja")}</button>`,
       ];
       if (v.turn?.swapped) btns.reverse();
       answerArea = mine
-        ? `<div class="sent">Odpowiedź wysłana: <b class="${mine === "fake" ? "t-fake" : "t-real"}">${mine === "fake" ? "Fake" : "Prawda"}</b>. Czekamy na innych (${answeredCount}/${v.players.length})…</div>`
+        ? `<div class="sent">${t("Odpowiedź wysłana:")} <b class="${mine === "fake" ? "t-fake" : "t-real"}">${t(mine === "fake" ? "Fake" : "Prawda")}</b>. ${t("Czekamy na innych ({0}/{1})…", answeredCount, v.players.length)}</div>`
         : `<div class="big-answers">${btns.join("")}</div>
-           <div class="muted small center-text">Odpowiedziało: ${answeredCount}/${v.players.length}</div>
+           <div class="muted small center-text">${t("Odpowiedziało:")} ${answeredCount}/${v.players.length}</div>
            ${inventoryBar(v)}`;
     }
   } else {
@@ -1232,20 +1229,20 @@ function viewQuestion(v) {
       ? v.players.filter(p => p.id === v.currentId)
       : v.players.slice().sort((a, b) => b.score - a.score);
     const pendingPick = !v.turns && v.offers.some(o => !o.picked);
-    const nextLabel = last ? "Zobacz wyniki"
-      : v.turns ? (v.lastInRound ? "Podsumowanie rundy ▶" : `Dalej: ${esc(playerName(v, v.nextId))} ▶`)
-      : "Następne pytanie ▶";
+    const nextLabel = last ? t("Zobacz wyniki")
+      : v.turns ? (v.lastInRound ? t("Podsumowanie rundy") + " ▶" : `${t("Dalej:")} ${esc(playerName(v, v.nextId))} ▶`)
+      : t("Następne pytanie") + " ▶";
     answerArea = `
       <div class="reveal-area scroll">
-      <div class="explain"><b>Dlaczego?</b> ${esc(q.wyjasnienie)}${q.link
-        ? `<a class="src-link" href="${esc(q.link)}" target="_blank" rel="noopener noreferrer">Źródło: ${esc(linkHost(q.link))} ↗</a>` : ""}</div>
+      <div class="explain"><b>${t("Dlaczego?")}</b> ${esc(q.wyjasnienie)}${q.link
+        ? `<a class="src-link" href="${esc(q.link)}" target="_blank" rel="noopener noreferrer">${t("Źródło:")} ${esc(linkHost(q.link))} ↗</a>` : ""}</div>
       <ul class="results">${sorted.map(p => {
         const r = p.result || { choice: null, correct: false, points: 0, notes: [] };
-        const label = r.choice == null ? "brak odpowiedzi" : r.choice === "fake" ? "Fake" : "Prawda";
+        const label = t(r.choice == null ? "brak odpowiedzi" : r.choice === "fake" ? "Fake" : "Prawda");
         const notes = r.notes || [];
         return `<li class="result ${r.correct ? "ok" : "bad"} ${p.id === S.myId ? "me" : ""}">
           <span class="res-icon">${r.correct ? "✔" : "✖"}</span>
-          <span class="res-name">${esc(p.name)}${notes.length ? `<span class="res-notes">${notes.map(esc).join(" · ")}</span>` : ""}</span>
+          <span class="res-name">${esc(p.name)}${notes.length ? `<span class="res-notes">${notes.map(n => esc(tm(n))).join(" · ")}</span>` : ""}</span>
           <span class="res-choice">${label}</span>
           <span class="res-points">${r.points ? "+" + r.points : "0"}</span>
           <span class="res-total">${p.score}</span>
@@ -1254,11 +1251,11 @@ function viewQuestion(v) {
       ${v.turns ? scoreChips(v) : lotteryBlock(v) + offerBlock(v)}
       </div>
       <div class="actions">
-        <button class="btn btn-ghost" data-a="leave">Opuść</button>
-        ${!v.turns && pendingPick && S.mode === "host" && v.offers.some(o => !o.picked && o.pid !== "host") ? `<button class="btn btn-ghost" data-a="skip-offer">Pomiń wybór</button>` : ""}
+        <button class="btn btn-ghost" data-a="leave">${t("Opuść")}</button>
+        ${!v.turns && pendingPick && S.mode === "host" && v.offers.some(o => !o.picked && o.pid !== "host") ? `<button class="btn btn-ghost" data-a="skip-offer">${t("Pomiń wybór")}</button>` : ""}
         ${isController()
-          ? `<button class="btn btn-primary" data-a="next" ${pendingPick ? "disabled" : ""}>${pendingPick ? "Czekamy na wybór power-upu" : nextLabel}</button>`
-          : `<span class="waiting">Czekamy na hosta…</span>`}
+          ? `<button class="btn btn-primary" data-a="next" ${pendingPick ? "disabled" : ""}>${pendingPick ? t("Czekamy na wybór power-upu") : nextLabel}</button>`
+          : `<span class="waiting">${t("Czekamy na hosta…")}</span>`}
       </div>`;
   }
 
@@ -1268,9 +1265,9 @@ function viewQuestion(v) {
       ${logo(true)}
       <div class="progress-label">${progressLabel(v)}</div>
     </div>
-    ${v.turns ? `<div class="turn-banner">Odpowiada: <b style="color:${avatarColor(playerName(v, v.currentId))}">${esc(playerName(v, v.currentId))}</b></div>` : ""}
-    ${!reveal && !v.turns && v.golden ? `<div class="gold-banner">✨ ZŁOTE PYTANIE – najwięcej punktów = power-up!</div>` : ""}
-    ${!reveal && !v.turns && v.turn?.incoming?.length ? `<div class="warn">⚠️ Ktoś użył na Tobie: ${v.turn.incoming.map(puLabel).join(", ")}</div>` : ""}
+    ${v.turns ? `<div class="turn-banner">${t("Odpowiada:")} <b style="color:${avatarColor(playerName(v, v.currentId))}">${esc(playerName(v, v.currentId))}</b></div>` : ""}
+    ${!reveal && !v.turns && v.golden ? `<div class="gold-banner">✨ ${t("ZŁOTE PYTANIE – najwięcej punktów = power-up!")}</div>` : ""}
+    ${!reveal && !v.turns && v.turn?.incoming?.length ? `<div class="warn">⚠️ ${t("Ktoś użył na Tobie:")} ${v.turn.incoming.map(puLabel).join(", ")}</div>` : ""}
     ${!reveal ? activeTags(v) : ""}
     ${reveal ? "" : `<div class="timer"><div class="timer-bar"><div class="timer-fill" id="timer-fill"></div></div><div class="timer-num" id="timer-num"></div></div>`}
     ${postCard(v, q)}
@@ -1281,8 +1278,8 @@ function viewQuestion(v) {
 function lotteryBlock(v) {
   if (!v.lottery) return "";
   return `<div class="offer lottery">
-    <div class="offer-kicker">🎲 ${v.turns ? `Runda ${v.nextRound} jest LOSOWA` : `Pytanie ${v.nextRound} jest LOSOWE`}</div>
-    <div class="offer-title">Każdy dostaje losowy power-up:</div>
+    <div class="offer-kicker">🎲 ${t(v.turns ? "Runda {0} jest LOSOWA" : "Pytanie {0} jest LOSOWE", v.nextRound)}</div>
+    <div class="offer-title">${t("Każdy dostaje losowy power-up:")}</div>
     <ul class="lottery-list">${v.lottery.map(x => `
       <li><span class="dot" style="background:${avatarColor(playerName(v, x.pid))}"></span><b>${esc(playerName(v, x.pid))}</b> <span>${puLabel(x.key)}</span></li>`).join("")}</ul>
   </div>`;
@@ -1292,39 +1289,39 @@ function lotteryBlock(v) {
 function liderzy(sorted, roundEnd) {
   const top = sorted.filter(p => p.score === sorted[0].score);
   const imiona = top.map(p => `<b>${esc(p.name)}</b>`);
-  const lista = imiona.length > 1 ? imiona.slice(0, -1).join(", ") + " i " + imiona.at(-1) : imiona[0];
-  if (top.length > 1) return `<p class="lead">${roundEnd ? "Remis na prowadzeniu" : "Remis! Wygrywają"}: ${lista} (${sorted[0].score} pkt)!</p>`;
-  return `<p class="lead">${roundEnd ? "Prowadzi" : "Wygrywa"} ${lista} z wynikiem ${sorted[0].score} pkt!</p>`;
+  const lista = imiona.length > 1 ? imiona.slice(0, -1).join(", ") + " " + t("i") + " " + imiona.at(-1) : imiona[0];
+  if (top.length > 1) return `<p class="lead">${t(roundEnd ? "Remis na prowadzeniu: {0} ({1} pkt)!" : "Remis! Wygrywają: {0} ({1} pkt)!", lista, sorted[0].score)}</p>`;
+  return `<p class="lead">${t(roundEnd ? "Prowadzi {0} z wynikiem {1} pkt!" : "Wygrywa {0} z wynikiem {1} pkt!", lista, sorted[0].score)}</p>`;
 }
 
 // Nagrody za złotą rundę – jeden blok na zwycięzcę (przy remisie kilka).
 function offerBlock(v) {
   if (!v.offers.length) return "";
   const remis = v.offers.length > 1
-    ? `<div class="offer-tie">Remis! Nagrodę dostaje każdy z ${v.offers.length} graczy.</div>` : "";
+    ? `<div class="offer-tie">${t("Remis! Nagrodę dostaje każdy z {0} graczy.", v.offers.length)}</div>` : "";
   return remis + v.offers.map(o => offerOne(v, o)).join("");
 }
 
 function offerOne(v, o) {
   const name = esc(playerName(v, o.pid));
-  const head = `<div class="offer-kicker">✨ Nagroda za złot${v.turns ? "ą rundę" : "e pytanie"} ${o.round}</div>`;
+  const head = `<div class="offer-kicker">✨ ${t(v.turns ? "Nagroda za złotą rundę {0}" : "Nagroda za złote pytanie {0}", o.round)}</div>`;
   if (o.picked) {
-    return `<div class="offer">${head}<div class="offer-title">🏆 ${name} wybiera: <b>${puLabel(o.picked)}</b></div></div>`;
+    return `<div class="offer">${head}<div class="offer-title">🏆 ${t("{0} wybiera:", name)} <b>${puLabel(o.picked)}</b></div></div>`;
   }
-  const why = `zdobył najwięcej w złot${v.turns ? "ej rundzie" : "ym pytaniu"} (+${o.gain} pkt)`;
+  const why = t(v.turns ? "zdobył najwięcej w złotej rundzie (+{0} pkt)" : "zdobył najwięcej w złotym pytaniu (+{0} pkt)", o.gain);
   // Online wybiera tylko zwycięzca na swoim urządzeniu; reszta widzi, że trwa wybór.
   if (!v.turns && o.pid !== S.myId) {
-    return `<div class="offer">${head}<div class="offer-title">🏆 <b>${name}</b> ${why} i wybiera power-up…</div></div>`;
+    return `<div class="offer">${head}<div class="offer-title">🏆 <b>${name}</b> ${why} ${t("i wybiera power-up…")}</div></div>`;
   }
   return `<div class="offer">
     ${head}
-    <div class="offer-title">🏆 <b>${!v.turns ? "Ty" : name}</b> ${!v.turns ? why.replace("zdobył", "zdobyłeś") : why}! Wybierz 1 power-up:</div>
-    ${o.last ? `<div class="muted small offer-note">${v.turns ? "To była ostatnia runda" : "To było ostatnie pytanie"} – power-up da +${PUNKTY_ZA_POWERUP} pkt do wyniku końcowego.</div>` : ""}
+    <div class="offer-title">🏆 ${!v.turns ? t("Zdobyłeś najwięcej w złotym pytaniu (+{0} pkt)!", o.gain) : `<b>${name}</b> ${why}!`} ${t("Wybierz 1 power-up:")}</div>
+    ${o.last ? `<div class="muted small offer-note">${t(v.turns ? "To była ostatnia runda – power-up da +{0} pkt do wyniku końcowego." : "To było ostatnie pytanie – power-up da +{0} pkt do wyniku końcowego.", PUNKTY_ZA_POWERUP)}</div>` : ""}
     <div class="offer-grid">${o.options.map(k => {
-      const d = POWERUPY[k];
+      const d = tpu(k);
       return `<button class="pu pu-big pu-${d.typ}" data-a="pick-pu" data-key="${k}" data-pid="${esc(o.pid)}">
         <span class="pu-icon">${d.ikona}</span><span class="pu-name">${d.nazwa}</span><span class="pu-desc">${d.opis}</span>
-        <span class="pu-type">${d.typ === "atak" ? "atak" : "pomoc"}</span></button>`;
+        <span class="pu-type">${t(d.typ === "atak" ? "atak" : "pomoc")}</span></button>`;
     }).join("")}</div>
   </div>`;
 }
@@ -1342,7 +1339,7 @@ function viewSummary(v) {
   return `
   <section class="screen panel">
     ${logo(true)}
-    <h1 class="h1">${roundEnd ? `Koniec rundy ${v.round} z ${v.rounds}` : v.turns ? "Koniec gry" : "Podsumowanie"}</h1>
+    <h1 class="h1">${roundEnd ? t("Koniec rundy {0} z {1}", v.round, v.rounds) : t(v.turns ? "Koniec gry" : "Podsumowanie")}</h1>
     ${best ? liderzy(sorted, roundEnd) : ""}
     <div class="scroll">
     ${roundEnd ? lotteryBlock(v) + offerBlock(v) : ""}
@@ -1350,18 +1347,18 @@ function viewSummary(v) {
       <li class="rank ${p.id === S.myId ? "me" : ""} ${i === 0 ? "first" : ""}">
         <span class="rank-pos">${medals[i] || i + 1}</span>
         <span class="rank-name">${esc(p.name)}${v.powerupy && roundEnd && p.inv.length ? ` <span class="rank-inv">${p.inv.map(k => POWERUPY[k].ikona).join("")}</span>` : ""}</span>
-        <span class="rank-good">${p.dobre}/${asked} dobrze${p.puBonus ? ` · +${p.puBonus} za power-upy` : ""}</span>
+        <span class="rank-good">${t("{0}/{1} dobrze", p.dobre, asked)}${p.puBonus ? ` · ${t("+{0} za power-upy", p.puBonus)}` : ""}</span>
         <span class="rank-score">${p.score}</span>
       </li>`).join("")}</ol>
-    <div class="stat-line">Wspólnie rozpoznaliście poprawnie <b>${pct}%</b> postów.</div>
-    ${roundEnd ? "" : `<div class="tip">💡 Zanim udostępnisz: sprawdź autora, poszukaj tej informacji w innych źródłach i uważaj na presję czasu i emocje.</div>`}
+    <div class="stat-line">${t("Wspólnie rozpoznaliście poprawnie <b>{0}%</b> postów.", pct)}</div>
+    ${roundEnd ? "" : `<div class="tip">💡 ${t("Zanim udostępnisz: sprawdź autora, poszukaj tej informacji w innych źródłach i uważaj na presję czasu i emocje.")}</div>`}
     </div>
     <div class="actions">
-      <button class="btn btn-ghost" data-a="leave">Opuść</button>
-      ${roundEnd ? `<button class="btn btn-primary" data-a="next" ${mustPick ? "disabled" : ""}>${mustPick ? "Najpierw wybierz power-up" : v.offers[0]?.last ? "Zobacz wyniki ▶" : "Kolejna runda ▶"}</button>`
-        : ctrl ? `<button class="btn btn-ghost" data-a="to-settings">Zmień ustawienia</button>
-                <button class="btn btn-primary" data-a="again">${v.turns ? "Zagraj od nowa ▶" : "Kolejna runda ▶"}</button>`
-             : `<span class="waiting">Czekamy, aż host rozpocznie kolejną rundę…</span>`}
+      <button class="btn btn-ghost" data-a="leave">${t("Opuść")}</button>
+      ${roundEnd ? `<button class="btn btn-primary" data-a="next" ${mustPick ? "disabled" : ""}>${mustPick ? t("Najpierw wybierz power-up") : (v.offers[0]?.last ? t("Zobacz wyniki") : t("Kolejna runda")) + " ▶"}</button>`
+        : ctrl ? `<button class="btn btn-ghost" data-a="to-settings">${t("Zmień ustawienia")}</button>
+                <button class="btn btn-primary" data-a="again">${t(v.turns ? "Zagraj od nowa" : "Kolejna runda")} ▶</button>`
+             : `<span class="waiting">${t("Czekamy, aż host rozpocznie kolejną rundę…")}</span>`}
     </div>
   </section>`;
 }
@@ -1386,6 +1383,10 @@ setInterval(tick, 100);
 window.addEventListener("beforeunload", () => { if (S.mode === "host" || S.mode === "guest") leaveAll(); });
 
 (function init() {
+  przelacznikJezyka(document.getElementById("lang"));
+  const tytul = () => { document.title = t("FAKE czy FAKT?"); };
+  document.addEventListener("jezyk", () => { tytul(); lastRenderKey = ""; render(); });
+  tytul();
   const code = new URLSearchParams(location.search).get("pokoj");
   if (code) { S.joinCode = code.toUpperCase().slice(0, 5); S.screen = "onlineMenu"; }
   render();

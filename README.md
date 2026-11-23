@@ -47,7 +47,11 @@ Wersja karciana jest pod adresem `/admin.html` (z gry nie ma do niej linku). Mo�
 - wyeksportować poprawki (JSON) albo gotowy `questions.js` do gry,
 - dołączyć 4 karty zasad (przód + tył) i w zakładce „Pudełko i instrukcja” wydrukować pudełko (wieczko i spód; rozmiar liczy się z liczby kart i ich grubości) oraz instrukcję na 2 strony A4 oraz składaną ulotkę z zasadami (3 × 3 pola wielkości karty, po złożeniu mieści się w pudełku) (`dodatki.js`).
 
-Gotowe PDF-y z domyślnymi ustawieniami są w folderze `pdf/` i do pobrania z `admin.html` (na stronie gry nie ma do nich linku). Po zmianie kart wygeneruj je ponownie (np. Chrome headless z `admin.html?druk=karty` i `admin.html?druk=dodatki`).
+Gotowe PDF-y z domyślnymi ustawieniami są w folderze `pdf/` po polsku, angielsku (`-en`) i niemiecku (`-de`) i do pobrania z `admin.html` w języku wybranym przełącznikiem (na stronie gry nie ma do nich linku). Po zmianie kart wygeneruj je ponownie (np. Chrome headless z `admin.html?druk=karty&lang=en` i `admin.html?druk=dodatki&lang=en`; bez `lang` – po polsku).
+
+## Języki (PL / EN / DE)
+
+W prawym górnym rogu strony gry jest przełącznik języka (zapamiętywany w przeglądarce, można też dodać `?lang=en` lub `?lang=de` do adresu). Online każdy gracz widzi grę w swoim języku. Teksty w kodzie są po polsku i przechodzą przez `t("…")` z `i18n.js`; tłumaczenia są w `i18n-en.js` i `i18n-de.js` (interfejs, power-upy, wersja karciana), a pytania w `pytania-en.js` i `pytania-de.js` (po numerze `nr`). Nowe pytanie bez tłumaczenia pokaże się po polsku. W `admin.html` przełącznik zmienia język kart, pudełka, instrukcji i ulotki (panel admina zostaje po polsku); zdjęcia makiety do instrukcji są w `makieta/stol-en.png`, `samo-en.png` itd.
 
 ## Wersja karciana (offline) – zasady w skrócie
 Bez prowadzącego, grają tylko gracze (2–8, 15–30 min). Potrzebna klepsydra 15 s albo stoper.
@@ -62,4 +66,4 @@ Bez prowadzącego, grają tylko gracze (2–8, 15–30 min). Potrzebna klepsydra
 Zakładka „Makieta 3D” w `admin.html` (`makieta.js`) pokazuje samo pudełko, pudełko z kartami i rozgrywkę z kilku perspektyw (można obracać myszką). Gotowe zrzuty są w folderze `makieta/` (`admin.html?druk=3d&widok=stol` daje jedno ujęcie na cały ekran); dwa z nich są w instrukcji.
 
 ## Publikacja (GitHub Pages)
-Wrzuć `index.html`, `style.css`, `app.js`, `powerups.js`, `questions.js`, `admin.html`, `admin.css`, `admin.js`, `dodatki.js`, `makieta.js` oraz foldery `img/`, `pdf/` i `makieta/` do repozytorium, a potem Settings → Pages → Deploy from branch (main, katalog główny).
+Wrzuć `index.html`, `style.css`, `app.js`, `i18n.js`, `i18n-en.js`, `i18n-de.js`, `pytania-en.js`, `pytania-de.js`, `powerups.js`, `questions.js`, `admin.html`, `admin.css`, `admin.js`, `dodatki.js`, `makieta.js` oraz foldery `img/`, `pdf/` i `makieta/` do repozytorium, a potem Settings → Pages → Deploy from branch (main, katalog główny).

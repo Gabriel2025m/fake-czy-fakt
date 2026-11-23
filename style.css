@@ -516,3 +516,23 @@ body { min-height: 0; overscroll-behavior: none; }
 /* remis w złotej rundzie: kilka bloków wyboru */
 .offer-tie { font-weight: 800; color: var(--accent); margin: 0 0 8px; }
 .offer + .offer { margin-top: 10px; }
+
+/* ═════════════ Przełącznik języka (prawy górny róg) ═════════════ */
+.lang-switch {
+  position: fixed; top: 14px; right: 14px; z-index: 50; display: flex; gap: 2px; padding: 3px;
+  border-radius: 999px; background: var(--glass); border: 1px solid var(--edge); box-shadow: var(--hi);
+  -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur);
+}
+.lang-btn {
+  font: 700 12px/1 Inter, system-ui, sans-serif; letter-spacing: .04em; color: var(--muted);
+  background: none; border: 0; border-radius: 999px; padding: 7px 10px; cursor: pointer;
+}
+.lang-btn:hover { color: var(--text); background: var(--glass-hover); }
+.lang-btn.on { color: #14110a; background: var(--accent); }
+.lang-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+@media (max-width: 560px) {
+  .lang-switch { top: max(10px, env(safe-area-inset-top)); right: 10px; }
+  .lang-btn { padding: 7px 9px; }
+  .lang-switch:not(.open) .lang-btn:not(.on) { display: none; }
+  .game-top { padding-right: 52px; }
+}
