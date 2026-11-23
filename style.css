@@ -536,3 +536,11 @@ body { min-height: 0; overscroll-behavior: none; }
   .lang-switch:not(.open) .lang-btn:not(.on) { display: none; }
   .game-top { padding-right: 52px; }
 }
+
+/* pobieranie PDF-ów wersji karcianej (ekran główny) */
+.print-dl { margin-top: 18px; }
+.dl-grid { display: grid; gap: 8px; margin-top: 10px; }
+.dl-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 14px; border: 1px solid var(--edge); }
+.dl-row b { min-width: 72px; }
+.dl-row.on { border-color: var(--accent); background: var(--accent-dim); }
+.dl-row .btn { text-decoration: none; }

@@ -65,9 +65,10 @@ function pobierzPlik(nazwa, tresc, typ) {
 }
 
 // Wszystkie karty z poprawkami (bez usuniętych).
-function karty() {
+// tlumacz = false: zawsze po polsku (edytor i eksport questions.js – baza gry jest po polsku).
+function karty(tlumacz = true) {
   // Karty po angielsku/niemiecku: tłumaczenie z pytania-*.js przykrywa tekst (także poprawiony po polsku).
-  const baza = PYTANIA.map(q => tq({ ...q, ...(A.poprawki[q.nr] || {}) }));
+  const baza = PYTANIA.map(q => { const k = { ...q, ...(A.poprawki[q.nr] || {}) }; return tlumacz ? tq(k) : k; });
   const wlasne = Object.entries(A.poprawki).filter(([nr, p]) => p.wlasna).map(([nr, p]) => ({ nr, ...p }));
   return [...baza, ...wlasne].filter(k => !k.usunieta);
 }
@@ -150,7 +151,7 @@ function tylPU() {
 }
 
 function kartaTestowa(i, tyl) {
-  return `<div class="card test ${tyl ? "back" : ""}"><span class="cross"></span><b>${tyl ? "TYŁ" : "PRZÓD"} ${i + 1}</b></div>`;
+  return `<div class="card test ${tyl ? "back" : ""}"><span class="cross"></span><b>${t(tyl ? "TYŁ" : "PRZÓD")} ${i + 1}</b></div>`;
 }
 
 function kolor(s) {
@@ -195,7 +196,7 @@ function arkusz(komorki, s, tyl, nrStrony, wszystkie) {
   const off = tyl ? `transform: translate(${+A.ust.przesX || 0}mm, ${+A.ust.przesY || 0}mm);` : "";
   const cells = komorki.map(({ html, r, c }) =>
     `<div class="cell" style="left:${s.x0 + c * (s.w + s.g)}mm; top:${s.y0 + r * (s.h + s.g)}mm; width:${s.w}mm; height:${s.h}mm">${html}</div>`).join("");
-  return `<div class="sheet ${A.ust.ramka ? "outline" : ""}" data-label="Strona ${nrStrony} · ${tyl ? "TYŁ" : "PRZÓD"}">
+  return `<div class="sheet ${A.ust.ramka ? "outline" : ""}" data-label="${t("Strona {0} / {1}", nrStrony, wszystkie)} · ${t(tyl ? "TYŁ" : "PRZÓD")}">
     <div class="sheet-in" style="${off}">${cells}${A.ust.znaczniki ? znaczniki(s) : ""}</div>
     <div class="sheet-foot" style="left:${s.x0 + 3}mm">${t("Strona {0} / {1}", nrStrony, wszystkie)} · ${t(tyl ? "TYŁ" : "PRZÓD")}</div>
   </div>`;
@@ -256,53 +257,51 @@ function dopasujTeksty(root) {
 // ═════════════ Widoki ═════════════
 function renderSide() {
   const u = A.ust;
-  const opt = (obj, val) => Object.entries(obj).map(([k, o]) => `<option value="${k}" ${k === val ? "selected" : ""}>${o.label || o}</option>`).join("");
+  const opt = (obj, val) => Object.entries(obj).map(([k, o]) => `<option value="${k}" ${k === val ? "selected" : ""}>${t(o.label || o)}</option>`).join("");
   const s = siatka();
   document.getElementById("side").innerHTML = `
-    <h2>Druk</h2>
-    <label class="fld">Wygląd kart
+    <h2>${t("Druk")}</h2>
+    <label class="fld">${t("Wygląd kart")}
       <select data-u="styl">
-        <option value="gra" ${u.styl !== "jasny" ? "selected" : ""}>Jak w grze (ciemne tło)</option>
-        <option value="jasny" ${u.styl === "jasny" ? "selected" : ""}>Oszczędny (białe tło, mniej tuszu)</option>
+        <option value="gra" ${u.styl !== "jasny" ? "selected" : ""}>${t("Jak w grze (ciemne tło)")}</option>
+        <option value="jasny" ${u.styl === "jasny" ? "selected" : ""}>${t("Oszczędny (białe tło, mniej tuszu)")}</option>
       </select>
     </label>
-    <label class="fld">Rozmiar karty<select data-u="rozmiar">${opt(ROZMIARY, u.rozmiar)}</select></label>
-    <p class="hint">${s.per} kart na stronie A4 (${s.cols} × ${s.rows}).</p>
-    <label class="fld">Druk dwustronny – obracanie
+    <label class="fld">${t("Rozmiar karty")}<select data-u="rozmiar">${opt(ROZMIARY, u.rozmiar)}</select></label>
+    <p class="hint">${t("{0} kart na stronie A4 ({1} × {2}).", s.per, s.cols, s.rows)}</p>
+    <label class="fld">${t("Druk dwustronny – obracanie")}
       <select data-u="odwracanie">
-        <option value="dluga" ${u.odwracanie === "dluga" ? "selected" : ""}>Przez długą krawędź (domyślne)</option>
-        <option value="krotka" ${u.odwracanie === "krotka" ? "selected" : ""}>Przez krótką krawędź</option>
+        <option value="dluga" ${u.odwracanie === "dluga" ? "selected" : ""}>${t("Przez długą krawędź (domyślne)")}</option>
+        <option value="krotka" ${u.odwracanie === "krotka" ? "selected" : ""}>${t("Przez krótką krawędź")}</option>
       </select>
     </label>
     <div class="row2">
-      <label class="fld">Przesunięcie tyłu X (mm)<input type="number" step="0.5" data-u="przesX" value="${u.przesX}"></label>
-      <label class="fld">Przesunięcie tyłu Y (mm)<input type="number" step="0.5" data-u="przesY" value="${u.przesY}"></label>
+      <label class="fld">${t("Przesunięcie tyłu X (mm)")}<input type="number" step="0.5" data-u="przesX" value="${u.przesX}"></label>
+      <label class="fld">${t("Przesunięcie tyłu Y (mm)")}<input type="number" step="0.5" data-u="przesY" value="${u.przesY}"></label>
     </div>
-    <p class="hint">Kalibracja: wydrukuj dwustronnie „Stronę testową” i obejrzyj stronę TYŁ pod światło. Jeśli czerwony krzyżyk jest o 2 mm na prawo od czarnego, wpisz X = -2; jeśli 1 mm niżej, wpisz Y = -1.</p>
-    <label class="fld">Odstęp między kartami (mm)<input type="number" min="0" max="10" step="1" data-u="odstep" value="${u.odstep}"></label>
-    <label class="chk"><input type="checkbox" data-u="znaczniki" ${u.znaczniki ? "checked" : ""}> Znaczniki cięcia</label>
-    <label class="chk"><input type="checkbox" data-u="ramka" ${u.ramka ? "checked" : ""}> Cienka ramka wokół kart</label>
-    <label class="chk"><input type="checkbox" data-u="zdjecia" ${u.zdjecia ? "checked" : ""}> Zdjęcia na kartach</label>
-    <label class="chk"><input type="checkbox" data-u="tyly" ${u.tyly ? "checked" : ""}> Drukuj tyły (odpowiedzi)</label>
-    <label class="chk"><input type="checkbox" data-u="powerupy" ${u.powerupy ? "checked" : ""}> Karty power-upów</label>
-    ${u.powerupy ? `<label class="fld">Komplety power-upów (komplet = ${POWERUPY_KARTY.length} kart, po 1 z każdego)<select data-u="kompletyPU">
-        <option value="auto" ${u.kompletyPU === "auto" ? "selected" : ""}>Automatycznie: ${kompletyPU(true)} (1 na ok. ${PYTAN_NA_KOMPLET} pytań)</option>
-        ${[1, 2, 3, 4, 5, 6].map(n => `<option value="${n}" ${String(u.kompletyPU) === String(n) ? "selected" : ""}>${n} (${n * POWERUPY_KARTY.length} kart)</option>`).join("")}
+    <p class="hint">${t("Kalibracja: wydrukuj dwustronnie „Stronę testową” i obejrzyj stronę TYŁ pod światło. Jeśli czerwony krzyżyk jest o 2 mm na prawo od czarnego, wpisz X = -2; jeśli 1 mm niżej, wpisz Y = -1.")}</p>
+    <label class="fld">${t("Odstęp między kartami (mm)")}<input type="number" min="0" max="10" step="1" data-u="odstep" value="${u.odstep}"></label>
+    <label class="chk"><input type="checkbox" data-u="znaczniki" ${u.znaczniki ? "checked" : ""}> ${t("Znaczniki cięcia")}</label>
+    <label class="chk"><input type="checkbox" data-u="ramka" ${u.ramka ? "checked" : ""}> ${t("Cienka ramka wokół kart")}</label>
+    <label class="chk"><input type="checkbox" data-u="zdjecia" ${u.zdjecia ? "checked" : ""}> ${t("Zdjęcia na kartach")}</label>
+    <label class="chk"><input type="checkbox" data-u="tyly" ${u.tyly ? "checked" : ""}> ${t("Drukuj tyły (odpowiedzi)")}</label>
+    <label class="chk"><input type="checkbox" data-u="powerupy" ${u.powerupy ? "checked" : ""}> ${t("Karty power-upów")}</label>
+    ${u.powerupy ? `<label class="fld">${t("Komplety power-upów (komplet = {0} kart, po 1 z każdego)", POWERUPY_KARTY.length)}<select data-u="kompletyPU">
+        <option value="auto" ${u.kompletyPU === "auto" ? "selected" : ""}>${t("Automatycznie: {0} (1 na ok. {1} pytań)", kompletyPU(true), PYTAN_NA_KOMPLET)}</option>
+        ${[1, 2, 3, 4, 5, 6].map(n => `<option value="${n}" ${String(u.kompletyPU) === String(n) ? "selected" : ""}>${n} (${t("{0} kart", n * POWERUPY_KARTY.length)})</option>`).join("")}
       </select></label>` : ""}
     <div class="btns">
-      <button class="btn primary" data-a="print">Drukuj</button>
-      <button class="btn" data-a="test">Strona testowa</button>
+      <button class="btn primary" data-a="print">${t("Drukuj")}</button>
+      <button class="btn" data-a="test">${t("Strona testowa")}</button>
     </div>
-    <h2>Wersja karciana</h2>
-    <label class="chk"><input type="checkbox" data-u="zasady" ${u.zasady ? "checked" : ""}> Karty zasad w talii (4 karty)</label>
-    <label class="fld inline">Grubość karty (mm)<input type="number" min="0.15" max="1" step="0.05" data-u="grubosc" value="${u.grubosc}"></label>
-    <p class="hint">Od grubości zależy wysokość pudełka. Zwykły papier 250–300 g/m² ma ok. 0,3 mm.</p>
-    <div class="btns col">
-      <a class="btn" href="pdf/fake-czy-fakt-karty${LANG === "pl" ? "" : "-" + LANG}.pdf" download>Pobierz PDF: karty (${LANG.toUpperCase()})</a>
-      <a class="btn" href="pdf/fake-czy-fakt-pudelko-instrukcja${LANG === "pl" ? "" : "-" + LANG}.pdf" download>Pobierz PDF: pudełko i instrukcja (${LANG.toUpperCase()})</a>
-    </div>
-    <p class="hint">Gotowe pliki PDF mają ustawienia domyślne i oryginalne karty. Żeby wydrukować własne poprawki, użyj przycisku „Drukuj” i wybierz „Zapisz jako PDF”.</p>
-    <h2>Dane</h2>
+    <h2>${t("Wersja karciana")}</h2>
+    <label class="chk"><input type="checkbox" data-u="zasady" ${u.zasady ? "checked" : ""}> ${t("Karty zasad w talii (4 karty)")}</label>
+    <label class="fld inline">${t("Grubość karty (mm)")}<input type="number" min="0.15" max="1" step="0.05" data-u="grubosc" value="${u.grubosc}"></label>
+    <p class="hint">${t("Od grubości zależy wysokość pudełka. Zwykły papier 250–300 g/m² ma ok. 0,3 mm.")}</p>
+    <h2>${t("Gotowe PDF-y do druku")}</h2>
+    ${pdfLinki("btns col")}
+    <p class="hint">${t("Gotowe pliki PDF mają ustawienia domyślne i oryginalne karty. Żeby wydrukować własne poprawki, użyj przycisku „Drukuj” i wybierz „Zapisz jako PDF”.")}</p>
+    ${LANG === "pl" ? `<h2>Dane</h2>
     <div class="btns col">
       <button class="btn" data-a="new">+ Nowa karta</button>
       <button class="btn" data-a="export">Eksportuj poprawki (JSON)</button>
@@ -310,46 +309,55 @@ function renderSide() {
       <button class="btn" data-a="questions">Pobierz questions.js do gry</button>
       <button class="btn danger" data-a="reset">Usuń wszystkie poprawki</button>
     </div>
-    <p class="hint">Poprawki zapisują się w tej przeglądarce. Żeby trafiły do gry online, pobierz questions.js i podmień plik w repozytorium.</p>`;
+    <p class="hint">Poprawki zapisują się w tej przeglądarce. Żeby trafiły do gry online, pobierz questions.js i podmień plik w repozytorium.</p>`
+      : `<p class="hint">${t("Edycja treści kart i eksport są dostępne w wersji PL (baza pytań gry jest po polsku).")}</p>`}`;
+}
+
+// Linki do gotowych PDF-ów we wszystkich językach (bieżący pierwszy).
+function pdfLinki(klasa) {
+  const pliki = [["fake-czy-fakt-karty", "Karty"], ["fake-czy-fakt-pudelko-instrukcja", "Pudełko i instrukcja"]];
+  const jezyki = [LANG, ...Object.keys(JEZYKI).filter(j => j !== LANG)];
+  return `<div class="${klasa}">${jezyki.map(j => pliki.map(([plik, nazwa]) =>
+    `<a class="btn ${j === LANG ? "" : "ghost"}" href="pdf/${plik}${j === "pl" ? "" : "-" + j}.pdf" download>PDF: ${t(nazwa)} (${JEZYKI[j].skrot})</a>`).join("")).join("")}</div>`;
 }
 
 function renderCards() {
   const lista = widoczne();
   const wszystkie = karty();
   const ileWyb = wszystkie.filter(k => czyWybrana(k.nr)).length;
-  const sel = (val, obj) => Object.entries(obj).map(([k, v]) => `<option value="${k}" ${A.filtr[val] === k ? "selected" : ""}>${v}</option>`).join("");
+  const sel = (val, obj) => Object.entries(obj).map(([k, v]) => `<option value="${k}" ${A.filtr[val] === k ? "selected" : ""}>${t(v)}</option>`).join("");
   document.getElementById("tab-cards").innerHTML = `
     <div class="filters">
-      <input type="search" id="szukaj" placeholder="Szukaj w kartach…" value="${esc(A.filtr.szukaj)}">
+      <input type="search" id="szukaj" placeholder="${t("Szukaj w kartach…")}" value="${esc(A.filtr.szukaj)}">
       <select data-f="poziom">${sel("poziom", { all: "Wszystkie poziomy", ...POZIOMY })}</select>
       <select data-f="typ">${sel("typ", { all: "Prawda i fake", prawda: "Tylko prawda", fake: "Tylko fake" })}</select>
-      <span class="count">Do druku: <b>${ileWyb}</b> z ${wszystkie.length}</span>
-      <button class="btn small" data-a="sel-all">Zaznacz widoczne</button>
-      <button class="btn small" data-a="sel-none">Odznacz widoczne</button>
+      <span class="count">${t("Do druku: <b>{0}</b> z {1}", ileWyb, wszystkie.length)}</span>
+      <button class="btn small" data-a="sel-all">${t("Zaznacz widoczne")}</button>
+      <button class="btn small" data-a="sel-none">${t("Odznacz widoczne")}</button>
     </div>
     <div class="grid">${lista.map(k => `
       <article class="item ${czyWybrana(k.nr) ? "" : "off"}">
         <label class="pick"><input type="checkbox" data-pick="${esc(k.nr)}" ${czyWybrana(k.nr) ? "checked" : ""}></label>
         <div class="mini" data-a="edit" data-nr="${esc(k.nr)}">
-          ${k.obrazek ? `<img src="${esc(imgSrc(k.obrazek))}" alt="" loading="lazy">` : `<div class="noimg">brak zdjęcia</div>`}
+          ${k.obrazek ? `<img src="${esc(imgSrc(k.obrazek))}" alt="" loading="lazy">` : `<div class="noimg">${t("brak zdjęcia")}</div>`}
         </div>
         <div class="meta">
-          <div class="tags"><span class="nr">${esc(k.nr)}</span><span class="tag ${k.prawda ? "real" : "fake"}">${k.prawda ? "PRAWDA" : "FAKE"}</span><span class="tag">${POZIOMY[k.poziom] || ""}</span>${czyZmieniona(k) ? `<span class="tag edit">zmieniona</span>` : ""}${A.poprawki[k.nr]?.wlasna ? `<span class="tag edit">własna</span>` : ""}</div>
+          <div class="tags"><span class="nr">${esc(k.nr)}</span><span class="tag ${k.prawda ? "real" : "fake"}">${k.prawda ? t("PRAWDA") : "FAKE"}</span><span class="tag">${t(POZIOMY[k.poziom] || "")}</span>${czyZmieniona(k) ? `<span class="tag edit">${t("zmieniona")}</span>` : ""}${A.poprawki[k.nr]?.wlasna ? `<span class="tag edit">${t("własna")}</span>` : ""}</div>
           <p class="tx">${esc(k.tekst)}</p>
-          <button class="btn small" data-a="edit" data-nr="${esc(k.nr)}">Edytuj</button>
+          ${LANG === "pl" ? `<button class="btn small" data-a="edit" data-nr="${esc(k.nr)}">Edytuj</button>` : ""}
         </div>
-      </article>`).join("") || `<p class="empty">Brak kart dla tych filtrów.</p>`}</div>`;
+      </article>`).join("") || `<p class="empty">${t("Brak kart dla tych filtrów.")}</p>`}</div>`;
 }
 
 function renderPreview() {
   const { html, strony, karty: ile, s } = arkusze();
   document.getElementById("preview-bar").innerHTML = `
-    ${A.test ? `<b class="testinfo">Strona testowa.</b>` : ""}
+    ${A.test ? `<b class="testinfo">${t("Strona testowa")}.</b>` : ""}
     ${A.test ? "" : `<span>${skladTxt()}</span>`}
-    <span>${ile} kart · ${strony} ${strony === 1 ? "strona" : strony < 5 ? "strony" : "stron"} A4 · ${s.cols} × ${s.rows} na stronie</span>
-    <span class="hint">Drukuj w skali 100% („rzeczywisty rozmiar”), bez dopasowania do strony, dwustronnie: ${A.ust.odwracanie === "dluga" ? "obracanie przez długą krawędź" : "obracanie przez krótką krawędź"}.</span>
-    ${A.test ? `<button class="btn small" data-a="test-off">Wróć do kart</button>` : ""}
-    <button class="btn primary small" data-a="print">Drukuj</button>`;
+    <span>${t("{0} kart · {1} {2} A4 · {3} × {4} na stronie", ile, strony, strony === 1 ? "strona" : strony < 5 ? "strony" : "stron", s.cols, s.rows)}</span>
+    <span class="hint">${t(A.ust.odwracanie === "dluga" ? "Drukuj w skali 100% („rzeczywisty rozmiar”), bez dopasowania do strony, dwustronnie: obracanie przez długą krawędź." : "Drukuj w skali 100% („rzeczywisty rozmiar”), bez dopasowania do strony, dwustronnie: obracanie przez krótką krawędź.")}</span>
+    ${A.test ? `<button class="btn small" data-a="test-off">${t("Wróć do kart")}</button>` : ""}
+    <button class="btn primary small" data-a="print">${t("Drukuj")}</button>`;
   const box = document.getElementById("sheets");
   box.innerHTML = html;
   requestAnimationFrame(() => dopasujTeksty(box));
@@ -361,17 +369,22 @@ function renderExtras() {
   const { ile, spod, wieczko } = wymiaryPudelka();
   const zaDuze = [spod, wieczko].some(d => d.W + 2 * d.H > PAPIER.w - 12 || d.L + 2 * d.H > PAPIER.h - 30);
   document.getElementById("extras-bar").innerHTML = `
-    <span>Pudełko na ${ile} ${kartOdm(ile)} (spód ${spod.W} × ${spod.L} × ${spod.H} mm) , instrukcja A4 i składana ulotka · 5 stron</span>
-    ${zaDuze ? `<b class="testinfo">Talia jest za gruba na jedno pudełko z kartki A4 – zmniejsz liczbę kart albo podziel je na dwa pudełka.</b>` : ""}
-    <span class="hint">Drukuj jednostronnie w skali 100%. Pudełko najlepiej na papierze 250–300 g/m², instrukcję i ulotkę na zwykłym papierze.</span>
-    <button class="btn primary small" data-a="print">Drukuj</button>`;
+    <span>${t("Pudełko na {0} {1} (spód {2} × {3} × {4} mm), instrukcja A4 i składana ulotka · 5 stron", ile, kartOdm(ile), spod.W, spod.L, spod.H)}</span>
+    ${zaDuze ? `<b class="testinfo">${t("Talia jest za gruba na jedno pudełko z kartki A4 – zmniejsz liczbę kart albo podziel je na dwa pudełka.")}</b>` : ""}
+    <span class="hint">${t("Drukuj jednostronnie w skali 100%. Pudełko najlepiej na papierze 250–300 g/m², instrukcję i ulotkę na zwykłym papierze.")}</span>
+    <button class="btn primary small" data-a="print">${t("Drukuj")}</button>`;
   const box = document.getElementById("extras");
   box.innerHTML = dodatkiArkusze();
   requestAnimationFrame(() => dopasujTeksty(box));
 }
 
+const ZAKLADKI = { cards: "Karty", preview: "Podgląd wydruku", extras: "Pudełko i instrukcja", makieta: "Makieta 3D" };
 function render() {
-  document.querySelectorAll("#tabs button").forEach(b => b.classList.toggle("on", b.dataset.tab === A.tab));
+  document.title = `${t("Karty do druku")} – ${t("FAKE czy FAKT?")}`;
+  document.querySelector(".brand b").textContent = t("FAKE czy FAKT?");
+  document.querySelector(".brand span").textContent = t("Karty do druku");
+  document.querySelector(".back").textContent = t("Do gry");
+  document.querySelectorAll("#tabs button").forEach(b => { b.textContent = t(ZAKLADKI[b.dataset.tab]); b.classList.toggle("on", b.dataset.tab === A.tab); });
   document.getElementById("tab-cards").hidden = A.tab !== "cards";
   document.getElementById("tab-preview").hidden = A.tab !== "preview";
   document.getElementById("tab-extras").hidden = A.tab !== "extras";
@@ -385,8 +398,8 @@ function render() {
 
 // ═════════════ Edytor karty ═════════════
 function otworzEdytor(nr) {
-  const k = karty().find(x => x.nr === nr);
-  if (!k) return;
+  const k = karty(false).find(x => x.nr === nr);
+  if (!k || LANG !== "pl") return;
   A.edytowana = { ...k };
   renderEdytor();
   document.getElementById("editor").showModal();
@@ -394,6 +407,7 @@ function otworzEdytor(nr) {
 }
 
 function nowaKarta() {
+  if (LANG !== "pl") return;
   let i = 1;
   while (A.poprawki["W" + i] || PYTANIA.some(q => q.nr === "W" + i)) i++;
   A.edytowana = { nr: "W" + i, poziom: "normalny", prawda: false, tekst: "", wyjasnienie: "", zrodlo: "", link: "", obrazek: "", autor: "", handle: "", nowa: true };
@@ -480,7 +494,7 @@ function zapiszEdycje() {
 
 // ═════════════ Eksport / import ═════════════
 function eksportQuestions() {
-  const lista = karty().map(k => {
+  const lista = karty(false).map(k => {
     const o = {};
     for (const f of ["nr", "poziom", "prawda", "tekst", "zrodlo", "link", "wyjasnienie", "obrazek", "obrazekZrodlo", "autor", "handle"]) {
       if (k[f] !== undefined && k[f] !== "") o[f] = k[f];

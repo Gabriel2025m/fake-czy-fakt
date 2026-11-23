@@ -51,7 +51,7 @@ Gotowe PDF-y z domyślnymi ustawieniami są w folderze `pdf/` po polsku, angiels
 
 ## Języki (PL / EN / DE)
 
-W prawym górnym rogu strony gry jest przełącznik języka (zapamiętywany w przeglądarce, można też dodać `?lang=en` lub `?lang=de` do adresu). Online każdy gracz widzi grę w swoim języku. Teksty w kodzie są po polsku i przechodzą przez `t("…")` z `i18n.js`; tłumaczenia są w `i18n-en.js` i `i18n-de.js` (interfejs, power-upy, wersja karciana), a pytania w `pytania-en.js` i `pytania-de.js` (po numerze `nr`). Nowe pytanie bez tłumaczenia pokaże się po polsku. W `admin.html` przełącznik zmienia język kart, pudełka, instrukcji i ulotki (panel admina zostaje po polsku); zdjęcia makiety do instrukcji są w `makieta/stol-en.png`, `samo-en.png` itd.
+W prawym górnym rogu strony gry jest przełącznik języka (zapamiętywany w przeglądarce, można też dodać `?lang=en` lub `?lang=de` do adresu). Online każdy gracz widzi grę w swoim języku. Teksty w kodzie są po polsku i przechodzą przez `t("…")` z `i18n.js`; tłumaczenia są w `i18n-en.js` i `i18n-de.js` (interfejs, power-upy, wersja karciana), a pytania w `pytania-en.js` i `pytania-de.js` (po numerze `nr`). Nowe pytanie bez tłumaczenia pokaże się po polsku. W `admin.html` przełącznik zmienia język całego panelu oraz kart, pudełka, instrukcji i ulotki; edycja treści kart i eksport `questions.js` są tylko w wersji PL (baza pytań jest po polsku). Na ekranie głównym gry jest rozwijane „Pobierz do druku” z PDF-ami we wszystkich 3 językach; zdjęcia makiety do instrukcji są w `makieta/stol-en.png`, `samo-en.png` itd.
 
 ## Wersja karciana (offline) – zasady w skrócie
 Bez prowadzącego, grają tylko gracze (2–8, 15–30 min). Potrzebna klepsydra 15 s albo stoper.

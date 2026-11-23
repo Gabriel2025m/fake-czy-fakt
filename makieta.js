@@ -157,8 +157,8 @@ function kamera() {
 function renderMakieta(tylkoUjecie) {
   const host = document.getElementById("makieta");
   const bar = document.getElementById("makieta-bar");
-  if (bar) bar.innerHTML = `${WIDOKI.map(v => `<button class="btn small ${v.id === M.widok.id ? "primary" : ""}" data-widok="${v.id}">${v.label}</button>`).join("")}
-    <span class="hint">Przeciągnij myszką, żeby obrócić; kółkiem przybliżasz.</span>`;
+  if (bar) bar.innerHTML = `${WIDOKI.map(v => `<button class="btn small ${v.id === M.widok.id ? "primary" : ""}" data-widok="${v.id}">${t(v.label)}</button>`).join("")}
+    <span class="hint">${t("Przeciągnij myszką, żeby obrócić; kółkiem przybliżasz.")}</span>`;
   host.innerHTML = `<div class="m-view ${tylkoUjecie ? "full" : ""}"><div class="m-world" id="m-world">${htmlSceny(M.widok.scena)}</div></div>`;
   kamera();
   requestAnimationFrame(() => dopasujTeksty(host));

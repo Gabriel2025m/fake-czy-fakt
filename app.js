@@ -923,7 +923,23 @@ function viewHome() {
       <li>${t("<b>Szybciej = więcej punktów.</b> Dobra odpowiedź to {0} pkt + do {1} pkt bonusu za czas.", PUNKTY_ZA_DOBRA, MAX_BONUS_ZA_CZAS)}</li>
       <li>${t("<b>Lupa kosztuje.</b> Sprawdzenie źródła zabiera {0}% punktów za pytanie.", Math.round(KARA_ZA_ZRODLO * 100))}</li>
     </ul>
+    ${pobieranieDruku()}
   </section>`;
+}
+
+// Gotowe PDF-y wersji karcianej we wszystkich językach (bieżący pierwszy).
+function pobieranieDruku() {
+  const jezyki = [LANG, ...Object.keys(JEZYKI).filter(j => j !== LANG)];
+  const plik = (nazwa, j) => `pdf/${nazwa}${j === "pl" ? "" : "-" + j}.pdf`;
+  return `<details class="pu-details print-dl">
+    <summary>🖨️ ${t("Pobierz do druku")}</summary>
+    <p class="muted small">${t("Karty, pudełko i instrukcja wersji karcianej – PDF w 3 językach.")}</p>
+    <div class="dl-grid">${jezyki.map(j => `
+      <div class="dl-row ${j === LANG ? "on" : ""}"><b>${JEZYKI[j].nazwa}</b>
+        <a class="btn btn-ghost btn-small" href="${plik("fake-czy-fakt-karty", j)}" download>${t("Karty")} · PDF</a>
+        <a class="btn btn-ghost btn-small" href="${plik("fake-czy-fakt-pudelko-instrukcja", j)}" download>${t("Pudełko i instrukcja")} · PDF</a>
+      </div>`).join("")}</div>
+  </details>`;
 }
 
 function seg(settings, key, opts, fmt, editable) {
