@@ -442,4 +442,8 @@ body.tylko-druk .sheets { zoom: 1; gap: 0; }
   .sheet { box-shadow: none; overflow: hidden; break-after: page; page-break-after: always; margin: 0; }
   .sheet:last-child { break-after: auto; page-break-after: auto; }
   .sheet::before { display: none; }
+  /* Rozmyte cienie Chrome zapisuje w PDF jako miękką maskę – Podgląd na Macu rysuje ją jako ciemny prostokąt.
+     Na wydruku tylko ostre cienie bez rozmycia. */
+  .dark .c-post, .dark .b-stamp { box-shadow: 0 .5mm 0 rgba(0, 0, 0, .3); }
+  .dark.pu-front.pomoc .pu-panel, .dark.pu-front.atak .pu-panel { box-shadow: inset 0 .3mm 0 rgba(255, 255, 255, .2); }
 }
