@@ -333,3 +333,12 @@ Object.assign(SLOWNIK.en, {
   "{0} {1} pytań (z przodu post, z tyłu odpowiedź i wyjaśnienie), {2} {3} power-upów ({4} rodzajów) i składana ulotka z zasadami. Potrzebna jest też klepsydra {6}-sekundowa albo stoper w telefonie.": "{0} question cards (the post on the front, the answer and explanation on the back), {2} power-up cards ({4} kinds) and a folding rules leaflet. You also need a {6}-second sand timer or a phone stopwatch.",
   "W pudełku: {0} {1} (pytania i power-upy) oraz ulotka z zasadami.": "In the box: {0} cards (questions and power-ups) and a rules leaflet.",
 });
+
+// ── karty na A3 ze spadem ──
+Object.assign(SLOWNIK.en, {
+  "Papier na karty": "Paper for cards",
+  "Spad (mm)": "Bleed (mm)",
+  "{0} kart na stronie {3} ({1} × {2}). Spad: tło karty wychodzi {4} mm poza linię cięcia, znaczniki pokazują, gdzie ciąć.": "{0} cards per {3} page ({1} × {2}). Bleed: the card background extends {4} mm past the cut line; the crop marks show where to cut.",
+  "{0} kart · {1} {2} {5} · {3} × {4} na stronie": "{0} cards · {1} {5} pages · {3} × {4} per page",
+});
+Object.assign(SLOWNIK.en, { "Karty A3 ze spadem": "A3 cards with bleed", "Pudełko i ulotka A4": "A4 box and leaflet" });

@@ -170,8 +170,9 @@ function wymiaryPudelka() {
   const r = ROZMIARY[A.ust.rozmiar];
   const ile = talia().length;
   const grubosc = Math.max(0.1, +A.ust.grubosc || 0.3);
-  const H = Math.ceil(ile * grubosc + 3);           // wysokość spodu = grubość talii + zapas
-  const spod = { W: r.w + 2, L: r.h + 2, H };
+  // wysokość spodu = grubość talii + złożona ulotka (ok. 2 mm) + zapas; po 1,5 mm luzu z każdej strony karty
+  const H = Math.ceil(ile * grubosc + 2 + 3);
+  const spod = { W: r.w + 3, L: r.h + 3, H };
   const wieczko = { W: spod.W + 2, L: spod.L + 2, H: Math.min(30, Math.max(18, Math.round(H / 2))) };
   return { ile, grubosc, spod, wieczko };
 }
@@ -207,7 +208,10 @@ function siatkaPudelka(d, ozdoby) {
       ${zgiecia.map(([a, b, c, e]) => `<line x1="${a}" y1="${b}" x2="${c}" y2="${e}" class="fold"/>`).join("")}
     </svg>`;
   const o = ozdoby;
+  const spad = styl() === "dark" ? `<svg class="bx-lines" viewBox="0 0 ${Wn} ${Ln}" style="width:${Wn}mm;height:${Ln}mm">
+      <polygon points="${pts.map(q => q.join(",")).join(" ")}" class="bleed"/></svg>` : "";
   return `<div class="bx-net" style="left:${x0}mm;top:${y0}mm;width:${Wn}mm;height:${Ln}mm">
+      ${spad}
       ${panel("bx-c", H, H, W, L, o.srodek, 0)}
       ${panel("bx-w", H, 0, W, H, o.n, o.rot.n)}
       ${panel("bx-w", H, H + L, W, H, o.s, o.rot.s)}
@@ -301,7 +305,7 @@ function okladkaUlotki() {
 function ulotkaArkusz() {
   const r = ROZMIARY[A.ust.rozmiar];
   const kol = 3, wier = 3, W = kol * r.w, H = wier * r.h;
-  const x0 = (PAPIER.w - W) / 2, y0 = (PAPIER.h - H) / 2 + 4;
+  const x0 = (PAPIER.w - W) / 2, y0 = (PAPIER.h - H) / 2 - 2;   // wyżej, żeby spad nie zasłaniał legendy
   const pola = [okladkaUlotki(), ...panelyUlotki().map((p, i) => kartaZasad(p, i, `${i + 2}/9`))];
   const cells = pola.map((html, i) => `<div class="cell" style="left:${x0 + (i % kol) * r.w}mm;top:${y0 + Math.floor(i / kol) * r.h}mm;width:${r.w}mm;height:${r.h}mm">${html}</div>`).join("");
   const linie = [
@@ -310,6 +314,7 @@ function ulotkaArkusz() {
   ].join("");
   return `<div class="sheet a4 box ulotka">
     <div class="bx-head"><b>${t("Ulotka z zasadami")}</b> · ${t("wytnij po linii ciągłej, zegnij harmonijkę najpierw po liniach pionowych, potem po poziomych – okładka zostaje na wierzchu, a całość ma rozmiar karty")}</div>
+    ${styl() === "dark" ? `<svg class="bx-lines" viewBox="0 0 ${W} ${H}" style="left:${x0}mm;top:${y0}mm;width:${W}mm;height:${H}mm"><rect x="0" y="0" width="${W}" height="${H}" class="bleed"/></svg>` : ""}
     ${cells}
     <svg class="bx-lines" viewBox="0 0 ${W} ${H}" style="left:${x0}mm;top:${y0}mm;width:${W}mm;height:${H}mm">
       <rect x="0" y="0" width="${W}" height="${H}" class="cut"/>${linie}</svg>

@@ -7,7 +7,13 @@
 
 const KLUCZ_POPRAWEK = "fcf-karty-poprawki";
 const KLUCZ_USTAWIEN = "fcf-karty-ustawienia";
-const PAPIER = { w: 210, h: 297 };           // A4, mm
+const PAPIER = { w: 210, h: 297 };           // A4, mm – pudełko, instrukcja i ulotka
+// Arkusz na karty: domyślnie A3 (16 kart ze spadem na stronie), można wybrać A4.
+const ARKUSZE = {
+  a3: { label: "A3 (297 × 420 mm)", nazwa: "A3", w: 297, h: 420 },
+  a4: { label: "A4 (210 × 297 mm)", nazwa: "A4", w: 210, h: 297 },
+};
+function arkuszKart() { return ARKUSZE[A.ust.papier] || ARKUSZE.a3; }
 const MIN_MARGINES = 8;                       // mm – drukarki zwykle nie drukują przy samej krawędzi
 const ROZMIARY = {
   poker:  { label: "Pokerowe 63 × 88 mm", w: 63, h: 88 },
@@ -18,7 +24,7 @@ const POZIOMY = { latwy: "Łatwy", normalny: "Normalny", trudny: "Trudny" };
 const POLA = ["poziom", "prawda", "autor", "handle", "tekst", "obrazek", "zrodlo", "wyjasnienie", "link"];
 
 const DOMYSLNE = {
-  styl: "gra", rozmiar: "poker", odwracanie: "dluga", przesX: 0, przesY: 0, odstep: 0,
+  styl: "gra", rozmiar: "poker", papier: "a3", spad: 3, odwracanie: "dluga", przesX: 0, przesY: 0, odstep: 0,
   znaczniki: true, ramka: true, zdjecia: true, tyly: true,
   powerupy: true, kompletyPU: "auto", zasady: false, grubosc: 0.3,   // zasady są w ulotce, karty zasad – opcjonalnie
 };
@@ -161,12 +167,16 @@ function kolor(s) {
 }
 
 // ═════════════ Układ arkuszy ═════════════
+// Komórka = karta + spad z każdej strony (tło karty wychodzi poza linię cięcia, treść zostaje w środku).
+// x0, y0 – początek siatki komórek; linia cięcia karty w kolumnie c: x0 + c·(cw + g) + b.
 function siatka() {
-  const r = ROZMIARY[A.ust.rozmiar], g = Math.max(0, +A.ust.odstep || 0);
-  const cols = Math.max(1, Math.floor((PAPIER.w - 2 * MIN_MARGINES + g) / (r.w + g)));
-  const rows = Math.max(1, Math.floor((PAPIER.h - 2 * MIN_MARGINES + g) / (r.h + g)));
-  const gridW = cols * r.w + (cols - 1) * g, gridH = rows * r.h + (rows - 1) * g;
-  return { ...r, g, cols, rows, per: cols * rows, x0: (PAPIER.w - gridW) / 2, y0: (PAPIER.h - gridH) / 2, gridW, gridH };
+  const r = ROZMIARY[A.ust.rozmiar], g = Math.max(0, +A.ust.odstep || 0), P = arkuszKart();
+  const b = Math.max(0, Math.min(5, +A.ust.spad || 0));
+  const cw = r.w + 2 * b, ch = r.h + 2 * b;
+  const cols = Math.max(1, Math.floor((P.w - 2 * MIN_MARGINES + g) / (cw + g)));
+  const rows = Math.max(1, Math.floor((P.h - 2 * MIN_MARGINES + g) / (ch + g)));
+  const gridW = cols * cw + (cols - 1) * g, gridH = rows * ch + (rows - 1) * g;
+  return { ...r, g, b, cw, ch, P, cols, rows, per: cols * rows, x0: (P.w - gridW) / 2, y0: (P.h - gridH) / 2, gridW, gridH };
 }
 
 // Lista par [przód, tył] do wydruku.
@@ -195,8 +205,8 @@ function talia() {
 function arkusz(komorki, s, tyl, nrStrony, wszystkie) {
   const off = tyl ? `transform: translate(${+A.ust.przesX || 0}mm, ${+A.ust.przesY || 0}mm);` : "";
   const cells = komorki.map(({ html, r, c }) =>
-    `<div class="cell" style="left:${s.x0 + c * (s.w + s.g)}mm; top:${s.y0 + r * (s.h + s.g)}mm; width:${s.w}mm; height:${s.h}mm">${html}</div>`).join("");
-  return `<div class="sheet ${A.ust.ramka ? "outline" : ""}" data-label="${t("Strona {0} / {1}", nrStrony, wszystkie)} · ${t(tyl ? "TYŁ" : "PRZÓD")}">
+    `<div class="cell" style="left:${s.x0 + c * (s.cw + s.g)}mm; top:${s.y0 + r * (s.ch + s.g)}mm; width:${s.cw}mm; height:${s.ch}mm">${html}</div>`).join("");
+  return `<div class="sheet ${A.ust.ramka ? "outline" : ""} ${s.b ? "spad" : ""}" style="width:${s.P.w}mm; height:${s.P.h}mm; --spad:${s.b}mm" data-label="${t("Strona {0} / {1}", nrStrony, wszystkie)} · ${t(tyl ? "TYŁ" : "PRZÓD")}">
     <div class="sheet-in" style="${off}">${cells}${A.ust.znaczniki ? znaczniki(s) : ""}</div>
     <div class="sheet-foot" style="left:${s.x0 + 3}mm">${t("Strona {0} / {1}", nrStrony, wszystkie)} · ${t(tyl ? "TYŁ" : "PRZÓD")}</div>
   </div>`;
@@ -206,8 +216,8 @@ function arkusz(komorki, s, tyl, nrStrony, wszystkie) {
 // Znaczniki cięcia na marginesach, w miejscach linii cięcia.
 function znaczniki(s) {
   const xs = new Set(), ys = new Set();
-  for (let c = 0; c < s.cols; c++) { xs.add(s.x0 + c * (s.w + s.g)); xs.add(s.x0 + c * (s.w + s.g) + s.w); }
-  for (let r = 0; r < s.rows; r++) { ys.add(s.y0 + r * (s.h + s.g)); ys.add(s.y0 + r * (s.h + s.g) + s.h); }
+  for (let c = 0; c < s.cols; c++) { const x = s.x0 + c * (s.cw + s.g) + s.b; xs.add(x); xs.add(x + s.w); }
+  for (let r = 0; r < s.rows; r++) { const y = s.y0 + r * (s.ch + s.g) + s.b; ys.add(y); ys.add(y + s.h); }
   const len = 5, out = [];
   for (const x of xs) {
     out.push(`<i class="mark v" style="left:${x}mm; top:${s.y0 - len - 1}mm; height:${len}mm"></i>`);
@@ -268,7 +278,11 @@ function renderSide() {
       </select>
     </label>
     <label class="fld">${t("Rozmiar karty")}<select data-u="rozmiar">${opt(ROZMIARY, u.rozmiar)}</select></label>
-    <p class="hint">${t("{0} kart na stronie A4 ({1} × {2}).", s.per, s.cols, s.rows)}</p>
+    <div class="row2">
+      <label class="fld">${t("Papier na karty")}<select data-u="papier">${opt(ARKUSZE, u.papier)}</select></label>
+      <label class="fld">${t("Spad (mm)")}<input type="number" min="0" max="5" step="0.5" data-u="spad" value="${u.spad}"></label>
+    </div>
+    <p class="hint">${t("{0} kart na stronie {3} ({1} × {2}). Spad: tło karty wychodzi {4} mm poza linię cięcia, znaczniki pokazują, gdzie ciąć.", s.per, s.cols, s.rows, s.P.nazwa, s.b)}</p>
     <label class="fld">${t("Druk dwustronny – obracanie")}
       <select data-u="odwracanie">
         <option value="dluga" ${u.odwracanie === "dluga" ? "selected" : ""}>${t("Przez długą krawędź (domyślne)")}</option>
@@ -315,7 +329,7 @@ function renderSide() {
 
 // Linki do gotowych PDF-ów we wszystkich językach (bieżący pierwszy).
 function pdfLinki(klasa) {
-  const pliki = [["fake-czy-fakt-karty", "Karty"], ["fake-czy-fakt-pudelko-instrukcja", "Pudełko i instrukcja"]];
+  const pliki = [["fake-czy-fakt-karty-A3", "Karty A3 ze spadem"], ["fake-czy-fakt-pudelko-ulotka-A4", "Pudełko i ulotka A4"]];
   const jezyki = [LANG, ...Object.keys(JEZYKI).filter(j => j !== LANG)];
   return `<div class="${klasa}">${jezyki.map(j => pliki.map(([plik, nazwa]) =>
     `<a class="btn ${j === LANG ? "" : "ghost"}" href="pdf/${plik}${j === "pl" ? "" : "-" + j}.pdf" download>PDF: ${t(nazwa)} (${JEZYKI[j].skrot})</a>`).join("")).join("")}</div>`;
@@ -354,7 +368,7 @@ function renderPreview() {
   document.getElementById("preview-bar").innerHTML = `
     ${A.test ? `<b class="testinfo">${t("Strona testowa")}.</b>` : ""}
     ${A.test ? "" : `<span>${skladTxt()}</span>`}
-    <span>${t("{0} kart · {1} {2} A4 · {3} × {4} na stronie", ile, strony, strony === 1 ? "strona" : strony < 5 ? "strony" : "stron", s.cols, s.rows)}</span>
+    <span>${t("{0} kart · {1} {2} {5} · {3} × {4} na stronie", ile, strony, strony === 1 ? "strona" : strony < 5 ? "strony" : "stron", s.cols, s.rows, s.P.nazwa)}</span>
     <span class="hint">${t(A.ust.odwracanie === "dluga" ? "Drukuj w skali 100% („rzeczywisty rozmiar”), bez dopasowania do strony, dwustronnie: obracanie przez długą krawędź." : "Drukuj w skali 100% („rzeczywisty rozmiar”), bez dopasowania do strony, dwustronnie: obracanie przez krótką krawędź.")}</span>
     ${A.test ? `<button class="btn small" data-a="test-off">${t("Wróć do kart")}</button>` : ""}
     <button class="btn primary small" data-a="print">${t("Drukuj")}</button>`;
@@ -380,6 +394,8 @@ function renderExtras() {
 
 const ZAKLADKI = { cards: "Karty", preview: "Podgląd wydruku", extras: "Pudełko i instrukcja", makieta: "Makieta 3D" };
 function render() {
+  // rozmiar strony przy druku z przeglądarki: karty na wybranym arkuszu, dodatki zawsze A4
+  document.getElementById("rozmiar-strony").textContent = `@page { size: ${A.tab === "extras" ? "A4" : arkuszKart().nazwa} portrait; margin: 0; }`;
   document.title = `${t("Karty do druku")} – ${t("FAKE czy FAKT?")}`;
   document.querySelector(".brand b").textContent = t("FAKE czy FAKT?");
   document.querySelector(".brand span").textContent = t("Karty do druku");
@@ -647,8 +663,15 @@ render();
 const JEDNA = DRUK ? +new URLSearchParams(location.search).get("strona") || 0 : 0;
 function zostawJednaStrone() {
   if (!JEDNA) return;
-  document.body.classList.add("jedna-strona");
+  document.body.classList.add("jedna-strona", "czeka");
   document.querySelectorAll(".sheets .sheet").forEach((sh, i) => { if (i !== JEDNA - 1) sh.remove(); });
+  // strona pokazuje się dopiero po wczytaniu zdjęć i czcionek – zrzut zrobiony za wcześnie jest cały biały
+  const zdjecia = [...document.querySelectorAll(".sheets img")].map(img => img.complete ? null : new Promise(ok => { img.onload = img.onerror = ok; }));
+  Promise.all([document.fonts.ready, ...zdjecia]).then(() => {
+    document.querySelectorAll(".sheets").forEach(dopasujTeksty);
+    // zdjęcie się nie wczytało? strona zostaje biała, a skrypt zrzutów spróbuje jeszcze raz
+    if ([...document.querySelectorAll(".sheets img")].every(img => img.naturalWidth > 0)) document.body.classList.remove("czeka");
+  });
 }
 zostawJednaStrone();
 document.fonts.ready.then(() => {

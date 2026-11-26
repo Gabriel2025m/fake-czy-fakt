@@ -333,3 +333,12 @@ Object.assign(SLOWNIK.de, {
   "{0} {1} pytań (z przodu post, z tyłu odpowiedź i wyjaśnienie), {2} {3} power-upów ({4} rodzajów) i składana ulotka z zasadami. Potrzebna jest też klepsydra {6}-sekundowa albo stoper w telefonie.": "{0} Fragekarten (vorne der Post, hinten Antwort und Erklärung), {2} Power-up-Karten ({4} Arten) und ein Faltblatt mit den Regeln. Außerdem braucht ihr eine {6}-Sekunden-Sanduhr oder die Stoppuhr im Handy.",
   "W pudełku: {0} {1} (pytania i power-upy) oraz ulotka z zasadami.": "In der Schachtel: {0} Karten (Fragen und Power-ups) und ein Regel-Faltblatt.",
 });
+
+// ── karty na A3 ze spadem ──
+Object.assign(SLOWNIK.de, {
+  "Papier na karty": "Papier für Karten",
+  "Spad (mm)": "Beschnitt (mm)",
+  "{0} kart na stronie {3} ({1} × {2}). Spad: tło karty wychodzi {4} mm poza linię cięcia, znaczniki pokazują, gdzie ciąć.": "{0} Karten pro {3}-Seite ({1} × {2}). Beschnitt: Der Kartenhintergrund reicht {4} mm über die Schnittlinie; die Schnittmarken zeigen, wo geschnitten wird.",
+  "{0} kart · {1} {2} {5} · {3} × {4} na stronie": "{0} Karten · {1} {5}-Seiten · {3} × {4} pro Seite",
+});
+Object.assign(SLOWNIK.de, { "Karty A3 ze spadem": "A3-Karten mit Beschnitt", "Pudełko i ulotka A4": "A4-Schachtel und Faltblatt" });
